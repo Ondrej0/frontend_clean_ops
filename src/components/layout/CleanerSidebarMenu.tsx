@@ -19,12 +19,22 @@ const items = [
         icon: LayoutDashboard,
     },
     {
+        title: "My Work",
+        url: "/cleaner/my-work",
+        icon: LayoutDashboard,
+    },
+    {
+        title: "My Sites",
+        url: "/cleaner/my-sites",
+        icon: LayoutDashboard,
+    },
+    {
         title: "My Schedule",
         url: "/cleaner/schedule",
         icon: CalendarDays,
     },
     {
-        title: "Clock In",
+        title: "Opportunities",
         url: "/cleaner/clock-in",
         icon: Clock,
     },

@@ -13,47 +13,47 @@ function App() {
                     <Routes>
                         <Route
                             path="/manager/dashboard"
-                            element={<h1>Dashboard</h1>}
+                            element={<h1>Manager - Dashboard</h1>}
                         />
 
                         <Route
                             path="/manager/employees"
-                            element={<h1>Employees</h1>}
+                            element={<h1>Manager - Employees</h1>}
                         />
 
                         <Route
                             path="/manager/sites"
-                            element={<h1>Sites</h1>}
+                            element={<h1>Manager - Sites</h1>}
                         />
 
                         <Route
                             path="/manager/schedules"
-                            element={<h1>Schedules</h1>}
+                            element={<h1>Manager - Schedules</h1>}
                         />
 
                         <Route
                             path="/manager/reports"
-                            element={<h1>Reports</h1>}
+                            element={<h1>Manager - Reports</h1>}
                         />
 
                         <Route
                             path="/cleaner/dashboard"
-                            element={<h1>Dashboard</h1>}
+                            element={<h1>Cleaner - Dashboard</h1>}
                         />
 
                         <Route
                             path="/cleaner/schedule"
-                            element={<h1>My Schedule</h1>}
+                            element={<h1>Cleaner - My Schedule</h1>}
                         />
 
                         <Route
                             path="/cleaner/clock-in"
-                            element={<h1>Clock In</h1>}
+                            element={<h1>Cleaner - Clock In</h1>}
                         />
 
                         <Route
                             path="/cleaner/profile"
-                            element={<h1>Profile</h1>}
+                            element={<h1>Cleaner - Profile</h1>}
                         />
                     </Routes>
                 </SidebarInset>
