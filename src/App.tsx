@@ -7,6 +7,7 @@ import {Employees} from "@/pages/manager/employees.tsx";
 import {ManagerSites} from "@/pages/manager/managerSites.tsx";
 import {Schedules} from "@/pages/manager/schedules.tsx";
 import {Payroll} from "@/pages/manager/payroll.tsx";
+import {CreateEmployee} from "@/pages/manager/createEmployee.tsx";
 
 function App() {
     return (
@@ -28,7 +29,7 @@ function App() {
 
                         <Route
                             path="/manager/employees/create"
-                            element={<h1>Create new employee</h1>}
+                            element={<CreateEmployee/>}
                         />
 
                         <Route
