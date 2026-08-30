@@ -27,6 +27,11 @@ function App() {
                         />
 
                         <Route
+                            path="/manager/employees/create"
+                            element={<h1>Create new employee</h1>}
+                        />
+
+                        <Route
                             path="/manager/sites"
                             element={<ManagerSites />}
                         />
