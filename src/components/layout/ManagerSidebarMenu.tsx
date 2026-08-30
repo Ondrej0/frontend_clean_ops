@@ -35,8 +35,8 @@ const items = [
         icon: CalendarDays,
     },
     {
-        title: "Reports",
-        url: "/manager/reports",
+        title: "Payroll",
+        url: "/manager/payroll",
         icon: FileText,
     },
 ]

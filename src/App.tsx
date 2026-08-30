@@ -2,6 +2,11 @@ import { BrowserRouter, Routes, Route } from "react-router-dom"
 
 import { AppSidebar } from "@/components/layout/AppSidebar"
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
+import { ManagerDashboard} from "@/pages/manager/managerDashboard.tsx";
+import {Employees} from "@/pages/manager/employees.tsx";
+import {ManagerSites} from "@/pages/manager/managerSites.tsx";
+import {Schedules} from "@/pages/manager/schedules.tsx";
+import {Payroll} from "@/pages/manager/payroll.tsx";
 
 function App() {
     return (
@@ -13,27 +18,27 @@ function App() {
                     <Routes>
                         <Route
                             path="/manager/dashboard"
-                            element={<h1>Manager - Dashboard</h1>}
+                            element={<ManagerDashboard />}
                         />
 
                         <Route
                             path="/manager/employees"
-                            element={<h1>Manager - Employees</h1>}
+                            element={<Employees />}
                         />
 
                         <Route
                             path="/manager/sites"
-                            element={<h1>Manager - Sites</h1>}
+                            element={<ManagerSites />}
                         />
 
                         <Route
                             path="/manager/schedules"
-                            element={<h1>Manager - Schedules</h1>}
+                            element={<Schedules />}
                         />
 
                         <Route
-                            path="/manager/reports"
-                            element={<h1>Manager - Reports</h1>}
+                            path="/manager/payroll"
+                            element={<Payroll />}
                         />
 
                         <Route
