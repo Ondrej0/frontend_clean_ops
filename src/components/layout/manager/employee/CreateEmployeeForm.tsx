@@ -46,6 +46,7 @@ export function CreateEmployeeForm() {
         setSuccess(false);
 
         try {
+            //TODO add base URL to the end point, have a config file in the in here
             const response = await fetch("/api/employees", {
                 method: "POST",
                 headers: {

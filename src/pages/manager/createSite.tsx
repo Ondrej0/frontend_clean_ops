@@ -1,5 +1,7 @@
+import {CreateSiteForm} from "@/components/layout/manager/sites/CreateSiteForm.tsx";
+
 export function CreateSitePage() {
     return (
-        <h1>This is create site page</h1>
+        <CreateSiteForm/>
     )
 }
