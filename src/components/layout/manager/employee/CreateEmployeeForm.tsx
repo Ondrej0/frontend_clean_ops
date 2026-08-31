@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { ChangeEvent, FormEvent } from "react";
+import type { ChangeEvent, SubmitEvent } from "react";
 
 interface Employee {
     tenantId: string | null;
@@ -12,38 +12,82 @@ interface Employee {
 
 export function CreateEmployeeForm() {
     const [employee, setEmployee] = useState<Employee>({
-        //TODO hard code tenant ID -- maybe in config file for now
+        // TODO: Replace with the authenticated manager's tenant ID
         tenantId: null,
         firstName: "",
         lastName: "",
         password: "",
         email: "",
-        payRate: ""
+        payRate: "",
     });
+
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
+    const [success, setSuccess] = useState(false);
 
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-        setEmployee({ ...employee, [e.target.name]: e.target.value });
+        const { name, value } = e.target;
+
+        setEmployee((previousEmployee) => ({
+            ...previousEmployee,
+            [name]: value,
+        }));
+
+        // Clear messages when the user starts editing again
+        setError(null);
+        setSuccess(false);
     };
 
-    const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: SubmitEvent<HTMLFormElement>) => {
         e.preventDefault();
+
         setLoading(true);
         setError(null);
+        setSuccess(false);
+
         try {
-            //TODO add base url to the fetch request -- maybe a add config file?
-            const res = await fetch("api/employee", {
+            const response = await fetch("/api/employees", {
                 method: "POST",
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    "Content-Type": "application/json",
+                },
                 body: JSON.stringify(employee),
             });
-            if (!res.ok) {
-                const data = await res.json();
-                throw new Error(data.message || 'Failed to create employee');
+
+            if (!response.ok) {
+                let errorMessage = "Failed to create employee.";
+
+                try {
+                    const data = await response.json();
+
+                    if (data.message) {
+                        errorMessage = data.message;
+                    }
+                } catch {
+                    // Response wasn't valid JSON, so use the default message
+                }
+
+                setError(errorMessage);
+                return;
             }
+
+            setSuccess(true);
+
+            // Reset the form after successful creation
+            setEmployee({
+                tenantId: employee.tenantId,
+                firstName: "",
+                lastName: "",
+                password: "",
+                email: "",
+                payRate: "",
+            });
         } catch (err) {
-            setError(err instanceof Error ? err.message : 'Failed to create employee');
+            setError(
+                err instanceof Error
+                    ? err.message
+                    : "Something went wrong while creating the employee."
+            );
         } finally {
             setLoading(false);
         }
@@ -51,13 +95,93 @@ export function CreateEmployeeForm() {
 
     return (
         <form onSubmit={handleSubmit}>
-            <input name="firstName" value={employee.firstName} onChange={handleChange} placeholder="First Name" />
-            <input name="lastName" value={employee.lastName} onChange={handleChange} placeholder="Last name" />
-            <input name="password" value={employee.password} onChange={handleChange} placeholder="Password" />
-            <input name="email" value={employee.email} onChange={handleChange} placeholder="Email" />
-            <input name="payRate" value={employee.payRate} onChange={handleChange} placeholder="Pay Rate" />
-            {error && <p style={{ color: 'red' }}>{error}</p>}
-            <button type="submit" disabled={loading}>{loading ? 'Saving...' : 'Create Employee'}</button>
+            <div>
+                <label htmlFor="firstName">First Name</label>
+                <input
+                    id="firstName"
+                    name="firstName"
+                    type="text"
+                    value={employee.firstName}
+                    onChange={handleChange}
+                    placeholder="First Name"
+                    required
+                    disabled={loading}
+                />
+            </div>
+
+            <div>
+                <label htmlFor="lastName">Last Name</label>
+                <input
+                    id="lastName"
+                    name="lastName"
+                    type="text"
+                    value={employee.lastName}
+                    onChange={handleChange}
+                    placeholder="Last Name"
+                    required
+                    disabled={loading}
+                />
+            </div>
+
+            <div>
+                <label htmlFor="email">Email</label>
+                <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    value={employee.email}
+                    onChange={handleChange}
+                    placeholder="Email"
+                    required
+                    disabled={loading}
+                />
+            </div>
+
+            <div>
+                <label htmlFor="password">Temporary Password</label>
+                <input
+                    id="password"
+                    name="password"
+                    type="password"
+                    value={employee.password}
+                    onChange={handleChange}
+                    placeholder="Temporary Password"
+                    required
+                    disabled={loading}
+                />
+            </div>
+
+            <div>
+                <label htmlFor="payRate">Pay Rate (£/hour)</label>
+                <input
+                    id="payRate"
+                    name="payRate"
+                    type="number"
+                    value={employee.payRate}
+                    onChange={handleChange}
+                    placeholder="e.g. 12.50"
+                    min="0"
+                    step="0.01"
+                    required
+                    disabled={loading}
+                />
+            </div>
+
+            {error && (
+                <p role="alert" style={{ color: "red" }}>
+                    {error}
+                </p>
+            )}
+
+            {success && (
+                <p role="status" style={{ color: "green" }}>
+                    Employee created successfully.
+                </p>
+            )}
+
+            <button type="submit" disabled={loading}>
+                {loading ? "Creating..." : "Create Employee"}
+            </button>
         </form>
     );
 }
