@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type { ChangeEvent, SubmitEvent } from "react";
+import {config} from "@/config/config.ts";
 
 interface Employee {
     tenantId: string | null;
@@ -47,7 +48,7 @@ export function CreateEmployeeForm() {
 
         try {
             //TODO add base URL to the end point, have a config file in the in here
-            const response = await fetch("/api/employees", {
+            const response = await fetch(`${config.apiBaseUrl}/api/cleaner`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

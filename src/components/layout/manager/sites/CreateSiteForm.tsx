@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type { ChangeEvent, SubmitEvent } from "react";
+import {config} from "@/config/config.ts";
 
 interface Site {
     tenantID: string | null;
@@ -43,7 +44,7 @@ export function CreateSiteForm() {
 
         try {
             // TODO: Move the base URL into a config/environment variable.
-            const response = await fetch("/api/sites", {
+            const response = await fetch(`${config.apiBaseUrl}/api/sites`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
