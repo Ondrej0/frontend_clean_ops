@@ -9,6 +9,7 @@ import {Schedules} from "@/pages/manager/schedules.tsx";
 import {Payroll} from "@/pages/manager/payroll.tsx";
 import {CreateEmployee} from "@/pages/manager/createEmployee.tsx";
 import {CreateSitePage} from "@/pages/manager/createSite.tsx";
+import {CreateSchedule} from "@/pages/manager/createSchedule.tsx";
 
 function App() {
     return (
@@ -46,6 +47,11 @@ function App() {
                         <Route
                             path="/manager/schedules"
                             element={<Schedules />}
+                        />
+
+                        <Route
+                            path="/manager/schedules/create"
+                            element={<CreateSchedule />}
                         />
 
                         <Route

@@ -5,7 +5,7 @@ export function Employees(){
     return (
         <>
             <h1>This is Employees Page</h1>
-            <CreateButton url={"/manager/employees/create"} />
+            <CreateButton url={"/manager/employees/create"} text={"Create Employee"} />
             <EmployeeCard size={"sm"} title={"My cool card"} description={"This is my cool card description"} />
             <EmployeeCard size={"md"} title={"My cool card"} description={"This is my cool card description"} />
             <EmployeeCard size={"lg"} title={"My cool card"} description={"This is my cool card description"} />
