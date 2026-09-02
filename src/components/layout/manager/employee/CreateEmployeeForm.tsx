@@ -140,10 +140,10 @@ export function CreateEmployeeForm() {
             </div>
 
             <div>
-                <label htmlFor="password">Temporary Password</label>
+                <label htmlFor="passwordHash">Temporary Password</label>
                 <input
-                    id="password"
-                    name="password"
+                    id="passwordHash"
+                    name="passwordHash"
                     type="password"
                     value={employee.passwordHash}
                     onChange={handleChange}
