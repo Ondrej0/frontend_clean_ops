@@ -12,7 +12,7 @@ interface Site {
 
 export function CreateSiteForm() {
     const [site, setSite] = useState<Site>({
-        tenantID: null,
+        tenantID: config.testTenant,
         name: "",
         addressLine1: "",
         city: "",

@@ -3,10 +3,10 @@ import type { ChangeEvent, SubmitEvent } from "react";
 import {config} from "@/config/config.ts";
 
 interface Employee {
-    tenantId: string | null;
+    tenantID: string | null;
     firstName: string;
     lastName: string;
-    password: string;
+    passwordHash: string;
     email: string;
     payRate: string;
 }
@@ -14,10 +14,10 @@ interface Employee {
 export function CreateEmployeeForm() {
     const [employee, setEmployee] = useState<Employee>({
         // TODO: Replace with the authenticated manager's tenant ID
-        tenantId: null,
+        tenantID: config.testTenant,
         firstName: "",
         lastName: "",
-        password: "",
+        passwordHash: "",
         email: "",
         payRate: "",
     });
@@ -77,10 +77,10 @@ export function CreateEmployeeForm() {
 
             // Reset the form after successful creation
             setEmployee({
-                tenantId: employee.tenantId,
+                tenantID: employee.tenantID,
                 firstName: "",
                 lastName: "",
-                password: "",
+                passwordHash: "",
                 email: "",
                 payRate: "",
             });
@@ -145,7 +145,7 @@ export function CreateEmployeeForm() {
                     id="password"
                     name="password"
                     type="password"
-                    value={employee.password}
+                    value={employee.passwordHash}
                     onChange={handleChange}
                     placeholder="Temporary Password"
                     required
