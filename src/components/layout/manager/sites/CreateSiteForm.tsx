@@ -90,9 +90,16 @@ export function CreateSiteForm() {
     };
 
     return (
-        <form onSubmit={handleSubmit}>
-            <div>
-                <label htmlFor="name">Site Name</label>
+        <main className="min-h-full p-6 sm:p-10">
+            <form onSubmit={handleSubmit} className="mx-auto max-w-2xl rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+                <div className="mb-8">
+                    <p className="text-sm font-semibold uppercase tracking-[0.18em] text-blue-600">Operations</p>
+                    <h1 className="mt-2 text-2xl font-bold tracking-tight text-slate-950">Create a site</h1>
+                    <p className="mt-2 text-sm text-slate-500">Add a location for your cleaning teams and schedules.</p>
+                </div>
+                <div className="grid gap-5 sm:grid-cols-2">
+                <div className="sm:col-span-2">
+                <label className="mb-1.5 block text-sm font-medium text-slate-700" htmlFor="name">Site Name</label>
                 <input
                     id="name"
                     name="name"
@@ -102,11 +109,12 @@ export function CreateSiteForm() {
                     placeholder="Site name"
                     required
                     disabled={loading}
+                    className="w-full rounded-lg border px-3 py-2.5 text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:ring-3 focus:ring-blue-100"
                 />
             </div>
 
             <div>
-                <label htmlFor="addressLine1">Address Line 1</label>
+                <label className="mb-1.5 block text-sm font-medium text-slate-700" htmlFor="addressLine1">Address Line 1</label>
                 <input
                     id="addressLine1"
                     name="addressLine1"
@@ -116,11 +124,12 @@ export function CreateSiteForm() {
                     placeholder="Address Line 1"
                     required
                     disabled={loading}
+                    className="w-full rounded-lg border px-3 py-2.5 text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:ring-3 focus:ring-blue-100"
                 />
             </div>
 
             <div>
-                <label htmlFor="city">City</label>
+                <label className="mb-1.5 block text-sm font-medium text-slate-700" htmlFor="city">City</label>
                 <input
                     id="city"
                     name="city"
@@ -130,11 +139,12 @@ export function CreateSiteForm() {
                     placeholder="City"
                     required
                     disabled={loading}
+                    className="w-full rounded-lg border px-3 py-2.5 text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:ring-3 focus:ring-blue-100"
                 />
             </div>
 
             <div>
-                <label htmlFor="postcode">Postcode</label>
+                <label className="mb-1.5 block text-sm font-medium text-slate-700" htmlFor="postcode">Postcode</label>
                 <input
                     id="postcode"
                     name="postcode"
@@ -144,24 +154,27 @@ export function CreateSiteForm() {
                     placeholder="Postcode"
                     required
                     disabled={loading}
+                    className="w-full rounded-lg border px-3 py-2.5 text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:ring-3 focus:ring-blue-100"
                 />
+            </div>
             </div>
 
             {error && (
-                <p role="alert" style={{ color: "red" }}>
+                <p role="alert" className="mt-5 rounded-lg bg-red-50 p-3 text-sm text-red-700">
                     {error}
                 </p>
             )}
 
             {success && (
-                <p role="status" style={{ color: "green" }}>
+                <p role="status" className="mt-5 rounded-lg bg-emerald-50 p-3 text-sm text-emerald-700">
                     Site created successfully.
                 </p>
             )}
 
-            <button type="submit" disabled={loading}>
+            <button className="mt-6 inline-flex rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm shadow-blue-600/25 transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60" type="submit" disabled={loading}>
                 {loading ? "Creating..." : "Create Site"}
             </button>
-        </form>
+            </form>
+        </main>
     );
 }

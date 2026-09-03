@@ -17,7 +17,7 @@ function App() {
             <SidebarProvider>
                 <AppSidebar />
 
-                <SidebarInset>
+                <SidebarInset className="bg-slate-50">
                     <Routes>
                         <Route
                             path="/manager/dashboard"

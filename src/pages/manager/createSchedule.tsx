@@ -3,6 +3,7 @@ import FullCalendar from "@fullcalendar/react";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import { config } from "@/config/config.ts";
+import { getSites, type Site } from "@/lib/sites";
 
 import type {
     DateSelectArg,
@@ -10,15 +11,6 @@ import type {
     EventClickArg,
     EventInput,
 } from "@fullcalendar/core";
-
-interface Site {
-    id: string;
-    name: string;
-    addressLine1: string;
-    city: string;
-    postcode: string;
-    state: string;
-}
 
 interface ScheduleRuleRequest {
     dayOfWeek: string;
@@ -43,32 +35,8 @@ export function CreateSchedule() {
     const [success, setSuccess] = useState<string>("");
 
     useEffect(() => {
-        const fetchSites = async () => {
-            const response = await fetch(
-                `${config.apiBaseUrl}/api/sites?tenantID=${config.testTenant}`
-            );
-
-            if (!response.ok) {
-                throw new Error("Failed to fetch sites");
-            }
-
-            const sitesList = await response.json();
-
-            console.log(sitesList);
-
-            setSites(sitesList.Sites);
-        };
-
-        void fetchSites();
+        getSites().then(setSites).catch(() => setError("Unable to load sites."));
     }, []);
-
-    useEffect(() => {
-        console.log("Sites state updated:", sites);
-    }, [sites]);
-
-    useEffect(() => {
-        console.log("The events have been updated: ", events);
-    }, [events]);
 
     const handleSubmit = async (
         event: React.FormEvent<HTMLFormElement>
@@ -85,8 +53,8 @@ export function CreateSchedule() {
                 continue;
             }
 
-            const start = new Date(calendarEvent.start);
-            const end = new Date(calendarEvent.end);
+            const start = new Date(calendarEvent.start as string | number | Date);
+            const end = new Date(calendarEvent.end as string | number | Date);
 
             const daysOfWeek = [
                 "SUNDAY",
