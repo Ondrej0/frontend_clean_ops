@@ -176,140 +176,142 @@ export function CreateSchedule() {
     };
 
     return (
-        <div className="p-6">
-            {/* Page heading */}
-            <div className="mb-6">
-                <h1 className="text-2xl font-bold">
-                    Create Schedule
-                </h1>
+        <main className="min-h-full p-6 sm:p-10">
+            <div className="mx-auto max-w-6xl">
+                {/* Page heading */}
+                <div className="mb-8">
+                    <p className="mb-2 text-sm font-semibold uppercase tracking-[0.18em] text-blue-600">Operations</p>
+                    <h1 className="text-3xl font-bold tracking-tight text-slate-950">
+                        Create Schedule
+                    </h1>
+                    <p className="mt-2 text-slate-500">
+                        Drag across the calendar to create a shift.
+                    </p>
+                </div>
 
-                <p className="text-gray-500">
-                    Drag across the calendar to create a shift.
-                </p>
-            </div>
+                <form onSubmit={handleSubmit}>
+                    {/* Schedule details */}
+                    <div className="mb-6 flex flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:flex-row sm:items-end">
+                        {/* Site */}
+                        <div className="flex-1">
+                            <label
+                                htmlFor="site"
+                                className="mb-1.5 block text-sm font-medium text-slate-700"
+                            >
+                                Site
+                            </label>
 
-            <form onSubmit={handleSubmit}>
-                {/* Schedule details */}
-                <div className="mb-6 flex items-end gap-4">
-                    {/* Site */}
-                    <div>
-                        <label
-                            htmlFor="site"
-                            className="mb-1 block text-sm font-medium"
-                        >
-                            Site
-                        </label>
-
-                        <select
-                            id="site"
-                            value={selectedSiteID}
-                            onChange={(event) =>
-                                setSelectedSiteID(event.target.value)
-                            }
-                            required
-                            className="rounded-md border px-3 py-2"
-                        >
-                            <option value="">
-                                Select a site
-                            </option>
-
-                            {sites.map((site) => (
-                                <option
-                                    key={site.id}
-                                    value={site.id}
-                                >
-                                    {site.name} - {site.postcode}
+                            <select
+                                id="site"
+                                value={selectedSiteID}
+                                onChange={(event) =>
+                                    setSelectedSiteID(event.target.value)
+                                }
+                                required
+                                className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-slate-900 shadow-sm transition focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-100 sm:w-auto"
+                            >
+                                <option value="">
+                                    Select a site
                                 </option>
-                            ))}
-                        </select>
+
+                                {sites.map((site) => (
+                                    <option
+                                        key={site.id}
+                                        value={site.id}
+                                    >
+                                        {site.name} - {site.postcode}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
+                        {/* Schedule name */}
+                        <div className="flex-1">
+                            <label
+                                htmlFor="scheduleName"
+                                className="mb-1.5 block text-sm font-medium text-slate-700"
+                            >
+                                Schedule name
+                            </label>
+
+                            <input
+                                id="scheduleName"
+                                type="text"
+                                value={name}
+                                onChange={(event) =>
+                                    setName(event.target.value)
+                                }
+                                placeholder="Schedule name"
+                                required
+                                className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-slate-900 shadow-sm transition placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-100 sm:w-auto"
+                            />
+                        </div>
+
+                        {/* Submit */}
+                        <div>
+                            <button
+                                type="submit"
+                                className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm shadow-blue-600/25 transition hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-100 sm:w-auto"
+                            >
+                                Create schedule
+                            </button>
+                        </div>
                     </div>
 
-                    {/* Schedule name */}
-                    <div>
-                        <label
-                            htmlFor="scheduleName"
-                            className="mb-1 block text-sm font-medium"
-                        >
-                            Schedule name
-                        </label>
+                    {/* Error message */}
+                    {error && (
+                        <div role="alert" className="mb-6 rounded-2xl border border-red-200 bg-red-50 p-4 text-red-700">
+                            {error}
+                        </div>
+                    )}
 
-                        <input
-                            id="scheduleName"
-                            type="text"
-                            value={name}
-                            onChange={(event) =>
-                                setName(event.target.value)
+                    {/* Success message */}
+                    {success && (
+                        <div className="mb-6 rounded-2xl border border-blue-200 bg-blue-50 p-4 text-blue-700">
+                            {success}
+                        </div>
+                    )}
+
+                    {/* Calendar */}
+                    <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
+                        <FullCalendar
+                            plugins={[
+                                timeGridPlugin,
+                                interactionPlugin,
+                            ]}
+                            initialView="timeGridWeek"
+
+                            dayHeaderContent={(arg) =>
+                                arg.date.toLocaleDateString("en-GB", {
+                                    weekday: "long",
+                                })
                             }
-                            placeholder="Schedule name"
-                            required
-                            className="rounded-md border px-3 py-2"
+
+                            headerToolbar={{
+                                left: "",
+                                center: "",
+                                right: "",
+                            }}
+
+                            selectable={true}
+                            editable={true}
+                            selectMirror={true}
+                            allDaySlot={false}
+
+                            slotMinTime="06:00:00"
+                            slotMaxTime="23:00:00"
+
+                            height="auto"
+
+                            select={handleSelect}
+                            eventChange={handleEventChange}
+                            eventClick={handleEventClick}
+
+                            events={events}
                         />
                     </div>
-
-                    {/* Submit */}
-                    <div>
-                        <button
-                            type="submit"
-                            className="rounded-md bg-blue-600 px-4 py-2 font-medium text-white hover:bg-blue-700"
-                        >
-                            Create Schedule
-                        </button>
-                    </div>
-                </div>
-
-                {/* Error message */}
-                {error && (
-                    <div className="mb-6 rounded-md border border-red-300 bg-red-50 p-3 text-red-700">
-                        {error}
-                    </div>
-                )}
-
-                {/* Success message */}
-                {success && (
-                    <div className="mb-6 rounded-md border border-green-300 bg-green-50 p-3 text-green-700">
-                        {success}
-                    </div>
-                )}
-
-                {/* Calendar */}
-                <div className="rounded-lg border bg-white p-4">
-                    <FullCalendar
-                        plugins={[
-                            timeGridPlugin,
-                            interactionPlugin,
-                        ]}
-                        initialView="timeGridWeek"
-
-                        dayHeaderContent={(arg) =>
-                            arg.date.toLocaleDateString("en-GB", {
-                                weekday: "long",
-                            })
-                        }
-
-                        headerToolbar={{
-                            left: "",
-                            center: "",
-                            right: "",
-                        }}
-
-                        selectable={true}
-                        editable={true}
-                        selectMirror={true}
-                        allDaySlot={false}
-
-                        slotMinTime="06:00:00"
-                        slotMaxTime="23:00:00"
-
-                        height="auto"
-
-                        select={handleSelect}
-                        eventChange={handleEventChange}
-                        eventClick={handleEventClick}
-
-                        events={events}
-                    />
-                </div>
-            </form>
-        </div>
+                </form>
+            </div>
+        </main>
     );
 }
