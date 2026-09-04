@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { ChangeEvent, SubmitEvent } from "react";
 import {config} from "@/config/config.ts";
+import { PageBackLink } from "@/components/layout/PageBackLink";
 
 interface Employee {
     tenantId: string | null;
@@ -103,6 +104,7 @@ export function CreateEmployeeForm() {
     return (
         <main className="min-h-full p-6 sm:p-10">
             <div className="mx-auto max-w-2xl">
+                <PageBackLink to="/manager/employees">Back to employees</PageBackLink>
                 {/* Page heading */}
                 <div className="mb-8">
                     <p className="mb-2 text-sm font-semibold uppercase tracking-[0.18em] text-blue-600">People</p>

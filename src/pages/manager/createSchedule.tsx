@@ -4,6 +4,7 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import { config } from "@/config/config.ts";
 import { getSites, type Site } from "@/lib/sites";
+import { PageBackLink } from "@/components/layout/PageBackLink";
 
 import type {
     DateSelectArg,
@@ -178,6 +179,7 @@ export function CreateSchedule() {
     return (
         <main className="min-h-full p-6 sm:p-10">
             <div className="mx-auto max-w-6xl">
+                <PageBackLink to="/manager/schedules">Back to schedules</PageBackLink>
                 {/* Page heading */}
                 <div className="mb-8">
                     <p className="mb-2 text-sm font-semibold uppercase tracking-[0.18em] text-blue-600">Operations</p>

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { ChangeEvent, SubmitEvent } from "react";
 import {config} from "@/config/config.ts";
+import { PageBackLink } from "@/components/layout/PageBackLink";
 
 interface Site {
     tenantId: string | null;
@@ -91,7 +92,9 @@ export function CreateSiteForm() {
 
     return (
         <main className="min-h-full p-6 sm:p-10">
-            <form onSubmit={handleSubmit} className="mx-auto max-w-2xl rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+            <div className="mx-auto max-w-2xl">
+                <PageBackLink to="/manager/sites">Back to sites</PageBackLink>
+                <form onSubmit={handleSubmit} className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
                 <div className="mb-8">
                     <p className="text-sm font-semibold uppercase tracking-[0.18em] text-blue-600">Operations</p>
                     <h1 className="mt-2 text-2xl font-bold tracking-tight text-slate-950">Create a site</h1>
@@ -174,7 +177,8 @@ export function CreateSiteForm() {
             <button className="mt-6 inline-flex rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm shadow-blue-600/25 transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60" type="submit" disabled={loading}>
                 {loading ? "Creating..." : "Create Site"}
             </button>
-            </form>
+                </form>
+            </div>
         </main>
     );
 }

@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import FullCalendar from "@fullcalendar/react";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import type { DateSelectArg, EventChangeArg, EventClickArg, EventInput } from "@fullcalendar/core";
-import { ArrowLeft, Building2, CalendarDays, Clock3, LoaderCircle, MapPin, UserPlus, Users } from "lucide-react";
+import { Building2, CalendarDays, Clock3, LoaderCircle, MapPin, UserPlus, Users } from "lucide-react";
+import { PageBackLink } from "@/components/layout/PageBackLink";
 import { config } from "@/config/config";
 import { assignCleaner, editSchedule, getSchedule, type ScheduleDetails, type ScheduleRuleRequest } from "@/lib/schedules";
 
@@ -163,7 +164,7 @@ export function EditSchedule() {
     return (
         <main className="min-h-full p-6 sm:p-10">
             <div className="mx-auto max-w-6xl">
-                <Link to="/manager/schedules" className="mb-5 inline-flex items-center gap-2 text-sm font-semibold text-slate-500 transition hover:text-blue-700"><ArrowLeft className="size-4" />Back to schedules</Link>
+                <PageBackLink to="/manager/schedules">Back to schedules</PageBackLink>
                 <div className="mb-8 flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
                     <div>
                         <p className="mb-2 text-sm font-semibold uppercase tracking-[0.18em] text-blue-600">Operations</p>
