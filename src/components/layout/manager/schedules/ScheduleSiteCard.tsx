@@ -1,4 +1,5 @@
-import { Building2, CalendarDays, Clock3, MapPin } from "lucide-react";
+import { Building2, CalendarDays, Clock3, MapPin, Pencil } from "lucide-react";
+import { Link } from "react-router-dom";
 import type { ScheduleRule, SchedulesBySite } from "@/lib/schedules";
 
 interface ScheduleSiteCardProps {
@@ -81,11 +82,20 @@ export function ScheduleSiteCard({ site }: ScheduleSiteCardProps) {
 
                         return (
                             <section key={schedule.scheduleId} className="p-5">
-                                <div className="mb-3 flex items-center gap-2">
-                                    <CalendarDays className="size-4 text-blue-500" aria-hidden="true" />
-                                    <h3 className="font-semibold text-slate-900">
-                                        {schedule.name || "Unnamed schedule"}
-                                    </h3>
+                                <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
+                                    <div className="flex items-center gap-2">
+                                        <CalendarDays className="size-4 text-blue-500" aria-hidden="true" />
+                                        <h3 className="font-semibold text-slate-900">
+                                            {schedule.name || "Unnamed schedule"}
+                                        </h3>
+                                    </div>
+                                    <Link
+                                        to={`/manager/schedules/${schedule.scheduleId}/edit`}
+                                        className="inline-flex items-center gap-1.5 rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-xs font-semibold text-blue-700 transition hover:border-blue-300 hover:bg-blue-100 focus:outline-none focus:ring-4 focus:ring-blue-100"
+                                    >
+                                        <Pencil className="size-3.5" aria-hidden="true" />
+                                        Edit Schedule
+                                    </Link>
                                 </div>
 
                                 {rules.length === 0 ? (
