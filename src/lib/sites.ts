@@ -16,7 +16,7 @@ interface GetSitesResponse {
 /** Retrieves the sites that belong to the configured tenant. */
 export async function getSites(): Promise<Site[]> {
     const response = await fetch(
-        `${config.apiBaseUrl}/api/sites?tenantID=${config.testTenant}`
+        `${config.apiBaseUrl}/api/sites?tenantId=${config.testTenant}`
     );
 
     if (!response.ok) {

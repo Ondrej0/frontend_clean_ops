@@ -3,7 +3,7 @@ import type { ChangeEvent, SubmitEvent } from "react";
 import {config} from "@/config/config.ts";
 
 interface Site {
-    tenantID: string | null;
+    tenantId: string | null;
     name: string;
     addressLine1: string;
     city: string;
@@ -12,7 +12,7 @@ interface Site {
 
 export function CreateSiteForm() {
     const [site, setSite] = useState<Site>({
-        tenantID: config.testTenant,
+        tenantId: config.testTenant,
         name: "",
         addressLine1: "",
         city: "",
@@ -72,7 +72,7 @@ export function CreateSiteForm() {
             setSuccess(true);
 
             setSite({
-                tenantID: site.tenantID,
+                tenantId: site.tenantId,
                 name: "",
                 addressLine1: "",
                 city: "",

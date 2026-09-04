@@ -15,7 +15,7 @@ interface GetCleanersResponse {
 /** Retrieves the cleaners that belong to the configured tenant. */
 export async function getCleaners(): Promise<Employee[]> {
     const response = await fetch(
-        `${config.apiBaseUrl}/api/cleaner?tenantID=${config.testTenant}`
+        `${config.apiBaseUrl}/api/cleaner?tenantId=${config.testTenant}`
     );
 
     if (!response.ok) {

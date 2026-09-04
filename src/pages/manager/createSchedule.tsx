@@ -19,8 +19,8 @@ interface ScheduleRuleRequest {
 }
 
 interface CreateScheduleRequest {
-    tenantID: string;
-    siteID: string;
+    tenantId: string;
+    siteId: string;
     name: string;
     scheduleRule: ScheduleRuleRequest[];
 }
@@ -28,7 +28,7 @@ interface CreateScheduleRequest {
 export function CreateSchedule() {
     const [events, setEvents] = useState<EventInput[]>([]);
     const [sites, setSites] = useState<Site[]>([]);
-    const [selectedSiteID, setSelectedSiteID] = useState<string>("");
+    const [selectedSiteId, setSelectedSiteId] = useState<string>("");
     const [name, setName] = useState<string>("");
 
     const [error, setError] = useState<string>("");
@@ -76,8 +76,8 @@ export function CreateSchedule() {
         }
 
         const request: CreateScheduleRequest = {
-            tenantID: config.testTenant,
-            siteID: selectedSiteID,
+            tenantId: config.testTenant,
+            siteId: selectedSiteId,
             name: name,
             scheduleRule: scheduleRules,
         };
@@ -203,9 +203,9 @@ export function CreateSchedule() {
 
                             <select
                                 id="site"
-                                value={selectedSiteID}
+                                value={selectedSiteId}
                                 onChange={(event) =>
-                                    setSelectedSiteID(event.target.value)
+                                    setSelectedSiteId(event.target.value)
                                 }
                                 required
                                 className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-slate-900 shadow-sm transition focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-100 sm:w-auto"
