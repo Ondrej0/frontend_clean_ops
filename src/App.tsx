@@ -11,6 +11,7 @@ import {CreateEmployee} from "@/pages/manager/createEmployee.tsx";
 import {CreateSitePage} from "@/pages/manager/createSite.tsx";
 import {CreateSchedule} from "@/pages/manager/createSchedule.tsx";
 import {EditSchedule} from "@/pages/manager/editSchedule.tsx";
+import {EmployeeDetails} from "@/pages/manager/employeeDetails.tsx";
 
 function App() {
     return (
@@ -33,6 +34,11 @@ function App() {
                         <Route
                             path="/manager/employees/create"
                             element={<CreateEmployee/>}
+                        />
+
+                        <Route
+                            path="/manager/employees/:cleanerId"
+                            element={<EmployeeDetails />}
                         />
 
                         <Route

@@ -1,4 +1,5 @@
 import { Mail, Phone, User } from "lucide-react";
+import { Link } from "react-router-dom";
 import type { Employee } from "@/lib/employee.ts";
 
 interface EmployeeCardProps {
@@ -11,7 +12,7 @@ export function EmployeeCard({ employee }: EmployeeCardProps) {
         .join(" ");
 
     return (
-        <article className="group rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:border-blue-200 hover:shadow-lg hover:shadow-blue-900/5">
+        <Link to={`/manager/employees/${employee.id}`} className="group block rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:border-blue-200 hover:shadow-lg hover:shadow-blue-900/5 focus:outline-none focus:ring-4 focus:ring-blue-100">
             <div className="mb-5 flex items-start justify-between gap-4">
                 <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
                     <User size={22} />
@@ -33,6 +34,6 @@ export function EmployeeCard({ employee }: EmployeeCardProps) {
                     <p>{employee.phone || "Phone not yet provided"}</p>
                 </div>
             </div>
-        </article>
+        </Link>
     );
 }

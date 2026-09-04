@@ -9,7 +9,7 @@ interface Employee {
     lastName: string;
     passwordHash: string;
     email: string;
-    payRate: string;
+    payRate: number;
 }
 
 export function CreateEmployeeForm() {
@@ -20,7 +20,7 @@ export function CreateEmployeeForm() {
         lastName: "",
         passwordHash: "",
         email: "",
-        payRate: "",
+        payRate: 0,
     });
 
     const [error, setError] = useState<string | null>(null);
@@ -83,7 +83,7 @@ export function CreateEmployeeForm() {
                 lastName: "",
                 passwordHash: "",
                 email: "",
-                payRate: "",
+                payRate: 0,
             });
         } catch (err) {
             setError(
