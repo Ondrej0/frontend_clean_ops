@@ -12,6 +12,7 @@ import {CreateSitePage} from "@/pages/manager/createSite.tsx";
 import {CreateSchedule} from "@/pages/manager/createSchedule.tsx";
 import {EditSchedule} from "@/pages/manager/editSchedule.tsx";
 import {EmployeeDetails} from "@/pages/manager/employeeDetails.tsx";
+import {SiteDetails} from "@/pages/manager/siteDetails.tsx";
 
 function App() {
     return (
@@ -49,6 +50,11 @@ function App() {
                         <Route
                             path="/manager/sites/create"
                             element={<CreateSitePage />}
+                        />
+
+                        <Route
+                            path="/manager/sites/:siteId"
+                            element={<SiteDetails />}
                         />
 
                         <Route
