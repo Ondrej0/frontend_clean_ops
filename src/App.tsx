@@ -13,6 +13,7 @@ import {CreateSchedule} from "@/pages/manager/createSchedule.tsx";
 import {EditSchedule} from "@/pages/manager/editSchedule.tsx";
 import {EmployeeDetails} from "@/pages/manager/employeeDetails.tsx";
 import {SiteDetails} from "@/pages/manager/siteDetails.tsx";
+import {MyWork} from "@/pages/cleaner/myWork.tsx";
 
 function App() {
     return (
@@ -22,6 +23,7 @@ function App() {
 
                 <SidebarInset className="bg-slate-50">
                     <Routes>
+                        <Route path="/cleaner/my-work" element={<MyWork />} />
                         <Route
                             path="/manager/dashboard"
                             element={<ManagerDashboard />}
