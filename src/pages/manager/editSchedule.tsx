@@ -4,9 +4,11 @@ import FullCalendar from "@fullcalendar/react";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import type { DateSelectArg, EventChangeArg, EventClickArg, EventInput } from "@fullcalendar/core";
-import { Building2, CalendarDays, Clock3, LoaderCircle, MapPin, UserPlus, Users } from "lucide-react";
+import { Building2, CalendarDays, Clock3, LoaderCircle, MapPin, Users } from "lucide-react";
 import { PageBackLink } from "@/components/layout/PageBackLink";
+import { AssignCleanerControl } from "@/components/layout/manager/schedules/AssignCleanerControl";
 import { config } from "@/config/config";
+import type { Employee } from "@/lib/employee";
 import { assignCleaner, editSchedule, getSchedule, type ScheduleDetails, type ScheduleRuleRequest } from "@/lib/schedules";
 
 const dayNames = ["SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"];
@@ -120,21 +122,26 @@ export function EditSchedule() {
         }
     }
 
-    async function handleAssignCleaner() {
-        const cleanerId = window.prompt("Enter the cleaner user ID:")?.trim();
-        if (!cleanerId) return;
+    async function handleAssignCleaner(employee: Employee): Promise<boolean> {
+        if (assigning || schedule?.assignedCleaners?.some((cleaner) => cleaner.cleanerId === employee.id)) return false;
         setAssigning(true);
         setError("");
         setSuccess("");
         try {
-            await assignCleaner(scheduleId, cleanerId);
+            await assignCleaner(scheduleId, employee.id);
+            setSchedule((current) => current ? {
+                ...current,
+                assignedCleaners: [...(current.assignedCleaners ?? []), {
+                    cleanerId: employee.id,
+                    firstName: employee.firstName,
+                    lastName: employee.lastName,
+                }],
+            } : current);
             setSuccess("Cleaner assigned successfully.");
-            const refreshed = await getSchedule(scheduleId);
-            setSchedule(refreshed);
-            setName(refreshed.name ?? "");
-            setEvents(rulesToEvents(refreshed));
+            return true;
         } catch (assignError) {
             setError(assignError instanceof Error ? assignError.message : "Unable to assign this cleaner.");
+            return false;
         } finally {
             setAssigning(false);
         }
@@ -165,16 +172,13 @@ export function EditSchedule() {
         <main className="min-h-full p-6 sm:p-10">
             <div className="mx-auto max-w-6xl">
                 <PageBackLink to="/manager/schedules">Back to schedules</PageBackLink>
-                <div className="mb-8 flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
+                <div className="mb-8 flex flex-col justify-between gap-5 xl:flex-row xl:items-end">
                     <div>
                         <p className="mb-2 text-sm font-semibold uppercase tracking-[0.18em] text-blue-600">Operations</p>
                         <h1 className="text-3xl font-bold tracking-tight text-slate-950">Edit Schedule</h1>
                         <p className="mt-2 text-slate-500">Update details, adjust weekly shifts, and manage assigned cleaners.</p>
                     </div>
-                    <button type="button" onClick={() => void handleAssignCleaner()} disabled={assigning} className="inline-flex items-center justify-center gap-2 rounded-xl border border-blue-200 bg-white px-4 py-2.5 text-sm font-semibold text-blue-700 shadow-sm transition hover:bg-blue-50 disabled:cursor-not-allowed disabled:opacity-60">
-                        {assigning ? <LoaderCircle className="size-4 animate-spin" /> : <UserPlus className="size-4" />}
-                        Assign cleaner
-                    </button>
+                    <AssignCleanerControl key={scheduleId} assignedCleaners={schedule.assignedCleaners ?? []} assigning={assigning} onAssign={handleAssignCleaner} />
                 </div>
 
                 <div className="mb-6 grid gap-4 lg:grid-cols-3">
