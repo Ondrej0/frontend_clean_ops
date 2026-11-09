@@ -1,4 +1,4 @@
-import { config } from "@/config/config";
+import { config } from "../config/config.ts";
 
 export interface Site {
     id: string;
@@ -57,10 +57,13 @@ interface GetSitesResponse {
     Sites: Site[];
 }
 
-/** Retrieves the sites that belong to the configured tenant. */
-export async function getSites(): Promise<Site[]> {
+/** Retrieves tenant sites, optionally restricted to the given user. */
+export async function getSites(userId?: string): Promise<Site[]> {
+    const query = new URLSearchParams({ tenantId: config.testTenant });
+    if (userId !== undefined) query.set("userId", userId);
+
     const response = await fetch(
-        `${config.apiBaseUrl}/api/sites?tenantId=${config.testTenant}`
+        `${config.apiBaseUrl}/api/sites?${query}`
     );
 
     if (!response.ok) {

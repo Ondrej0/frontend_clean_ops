@@ -14,6 +14,8 @@ import {EditSchedule} from "@/pages/manager/editSchedule.tsx";
 import {EmployeeDetails} from "@/pages/manager/employeeDetails.tsx";
 import {SiteDetails} from "@/pages/manager/siteDetails.tsx";
 import {MyWork} from "@/pages/cleaner/myWork.tsx";
+import {CleanerSites} from "@/pages/cleaner/sites.tsx";
+import {CleanerSiteDetails} from "@/pages/cleaner/siteDetails.tsx";
 
 function App() {
     return (
@@ -24,6 +26,8 @@ function App() {
                 <SidebarInset className="bg-slate-50">
                     <Routes>
                         <Route path="/cleaner/my-work" element={<MyWork />} />
+                        <Route path="/cleaner/my-sites" element={<CleanerSites />} />
+                        <Route path="/cleaner/my-sites/:siteId" element={<CleanerSiteDetails />} />
                         <Route
                             path="/manager/dashboard"
                             element={<ManagerDashboard />}

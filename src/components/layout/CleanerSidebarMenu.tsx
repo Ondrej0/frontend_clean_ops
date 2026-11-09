@@ -5,6 +5,7 @@ import {
 } from "@/components/ui/sidebar"
 
 import {
+    Building2,
     LayoutDashboard,
     CalendarDays,
     Clock,
@@ -26,7 +27,7 @@ const items = [
     {
         title: "My Sites",
         url: "/cleaner/my-sites",
-        icon: LayoutDashboard,
+        icon: Building2,
     },
     {
         title: "My Schedule",

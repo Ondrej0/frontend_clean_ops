@@ -4,15 +4,16 @@ import type { Site } from "@/lib/sites";
 
 interface SiteCardProps {
     site: Site;
+    to?: string;
 }
 
-export function SiteCard({ site }: SiteCardProps) {
+export function SiteCard({ site, to = `/manager/sites/${site.id}` }: SiteCardProps) {
     const location = [site.addressLine1, site.city, site.postcode]
         .filter(Boolean)
         .join(", ");
 
     return (
-        <Link to={`/manager/sites/${site.id}`} className="group block rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:border-blue-200 hover:shadow-lg hover:shadow-blue-900/5 focus:outline-none focus:ring-4 focus:ring-blue-100">
+        <Link to={to} className="group block rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:border-blue-200 hover:shadow-lg hover:shadow-blue-900/5 focus:outline-none focus:ring-4 focus:ring-blue-100">
             <div className="mb-5 flex items-start justify-between gap-4">
                 <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
                     <Building2 size={22} />
