@@ -1,8 +1,4 @@
-import {
-    SidebarMenu,
-    SidebarMenuButton,
-    SidebarMenuItem,
-} from "@/components/ui/sidebar"
+import { AppNavigationMenu } from "./AppNavigationMenu"
 
 import {
     LayoutDashboard,
@@ -43,21 +39,5 @@ const items = [
 
 
 export function ManagerSidebarMenu() {
-    return (
-        <SidebarMenu>
-            {items.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton
-                        className="h-10 rounded-lg px-3 text-slate-600 hover:bg-blue-50 hover:text-blue-700"
-                        onClick={() => {
-                            window.location.href = item.url
-                        }}
-                    >
-                        <item.icon />
-                        <span>{item.title}</span>
-                    </SidebarMenuButton>
-                </SidebarMenuItem>
-            ))}
-        </SidebarMenu>
-    )
+    return <AppNavigationMenu items={items} />
 }

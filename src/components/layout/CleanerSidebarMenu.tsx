@@ -1,12 +1,9 @@
-import {
-    SidebarMenu,
-    SidebarMenuButton,
-    SidebarMenuItem,
-} from "@/components/ui/sidebar"
+import { AppNavigationMenu } from "./AppNavigationMenu"
 
 import {
     Building2,
     LayoutDashboard,
+    ClipboardList,
     CalendarDays,
     Clock,
     User,
@@ -22,7 +19,7 @@ const items = [
     {
         title: "My Work",
         url: "/cleaner/my-work",
-        icon: LayoutDashboard,
+        icon: ClipboardList,
     },
     {
         title: "My Sites",
@@ -48,20 +45,5 @@ const items = [
 
 
 export function CleanerSidebarMenu() {
-    return (
-        <SidebarMenu>
-            {items.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton
-                        onClick={() => {
-                            window.location.href = item.url
-                        }}
-                    >
-                        <item.icon />
-                        <span>{item.title}</span>
-                    </SidebarMenuButton>
-                </SidebarMenuItem>
-            ))}
-        </SidebarMenu>
-    )
+    return <AppNavigationMenu items={items} />
 }

@@ -1,7 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom"
 
 import { AppSidebar } from "@/components/layout/AppSidebar"
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
 import { ManagerDashboard} from "@/pages/manager/managerDashboard.tsx";
 import {Employees} from "@/pages/manager/employees.tsx";
 import {ManagerSites} from "@/pages/manager/managerSites.tsx";
@@ -21,10 +20,10 @@ import {MySchedule} from "@/pages/cleaner/schedule.tsx";
 function App() {
     return (
         <BrowserRouter>
-            <SidebarProvider>
+            <div className="app-shell">
                 <AppSidebar />
 
-                <SidebarInset className="bg-slate-50">
+                <div className="app-content bg-slate-50">
                     <Routes>
                         <Route path="/cleaner/my-work" element={<MyWork />} />
                         <Route path="/cleaner/my-sites" element={<CleanerSites />} />
@@ -104,9 +103,9 @@ function App() {
                             element={<h1>Cleaner - Profile</h1>}
                         />
                     </Routes>
-                </SidebarInset>
+                </div>
 
-            </SidebarProvider>
+            </div>
         </BrowserRouter>
     )
 }
