@@ -4,6 +4,7 @@ import type { ScheduleRule, SchedulesBySite } from "@/lib/schedules";
 
 interface ScheduleSiteCardProps {
     site: SchedulesBySite;
+    readOnly?: boolean;
 }
 
 const dayOrder = [
@@ -41,7 +42,7 @@ function sortRules(rules: ScheduleRule[]) {
     );
 }
 
-export function ScheduleSiteCard({ site }: ScheduleSiteCardProps) {
+export function ScheduleSiteCard({ site, readOnly = false }: ScheduleSiteCardProps) {
     const location = [site.addressLine1, site.city, site.postcode]
         .filter(Boolean)
         .join(", ");
@@ -73,7 +74,7 @@ export function ScheduleSiteCard({ site }: ScheduleSiteCardProps) {
                 <div className="px-5 py-8 text-center">
                     <CalendarDays className="mx-auto size-7 text-slate-300" />
                     <p className="mt-2 text-sm font-medium text-slate-700">No schedules for this site</p>
-                    <p className="mt-1 text-xs text-slate-500">Create one to add weekly cleaning hours.</p>
+                    <p className="mt-1 text-xs text-slate-500">{readOnly ? "Your weekly hours will appear once assigned." : "Create one to add weekly cleaning hours."}</p>
                 </div>
             ) : (
                 <div className="divide-y divide-slate-100">
@@ -89,13 +90,13 @@ export function ScheduleSiteCard({ site }: ScheduleSiteCardProps) {
                                             {schedule.name || "Unnamed schedule"}
                                         </h3>
                                     </div>
-                                    <Link
+                                    {!readOnly && <Link
                                         to={`/manager/schedules/${schedule.scheduleId}/edit`}
                                         className="inline-flex items-center gap-1.5 rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-xs font-semibold text-blue-700 transition hover:border-blue-300 hover:bg-blue-100 focus:outline-none focus:ring-4 focus:ring-blue-100"
                                     >
                                         <Pencil className="size-3.5" aria-hidden="true" />
                                         Edit Schedule
-                                    </Link>
+                                    </Link>}
                                 </div>
 
                                 {rules.length === 0 ? (

@@ -16,6 +16,7 @@ import {SiteDetails} from "@/pages/manager/siteDetails.tsx";
 import {MyWork} from "@/pages/cleaner/myWork.tsx";
 import {CleanerSites} from "@/pages/cleaner/sites.tsx";
 import {CleanerSiteDetails} from "@/pages/cleaner/siteDetails.tsx";
+import {MySchedule} from "@/pages/cleaner/schedule.tsx";
 
 function App() {
     return (
@@ -90,7 +91,7 @@ function App() {
 
                         <Route
                             path="/cleaner/schedule"
-                            element={<h1>Cleaner - My Schedule</h1>}
+                            element={<MySchedule />}
                         />
 
                         <Route

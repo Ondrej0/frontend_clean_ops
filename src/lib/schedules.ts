@@ -1,4 +1,4 @@
-import { config } from "@/config/config";
+import { config } from "../config/config.ts";
 
 export interface ScheduleRule {
     scheduleRuleId: string;
@@ -54,9 +54,10 @@ export interface SchedulesBySite {
     schedules: Schedule[];
 }
 
-/** Retrieves active sites and their active schedules for the configured tenant. */
-export async function getSchedulesBySites(): Promise<SchedulesBySite[]> {
+/** Retrieves active schedules, optionally restricted to the given user. */
+export async function getSchedulesBySites(userId?: string): Promise<SchedulesBySite[]> {
     const query = new URLSearchParams({ tenantId: config.testTenant });
+    if (userId !== undefined) query.set("userId", userId);
     const response = await fetch(
         `${config.apiBaseUrl}/api/schedules/by-site?${query.toString()}`
     );
