@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import type { ChangeEvent } from "react";
 import { Building2, CalendarDays, CheckCircle2, Clock3, LoaderCircle, Mail, MapPin, Pencil, Phone, PoundSterling, Save, User, XCircle } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
+import { SiteQrCodeButton } from "@/components/layout/manager/sites/SiteQrCodeButton";
 import { PageBackLink } from "@/components/layout/PageBackLink";
 import { editSite, getSite, type EditSiteRequest, type SiteDetails as SiteDetailsData } from "@/lib/sites";
 import { config } from "@/config/config";
@@ -164,7 +165,10 @@ export function SiteDetails() {
                         {saveError && <p role="alert" className="mt-5 rounded-lg bg-red-50 p-3 text-sm text-red-700">{saveError}</p>}
                     </section>
 
-                    <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"><div className="flex items-center gap-2"><Clock3 className="size-5 text-blue-600" /><h2 className="font-semibold text-slate-900">Record</h2></div><dl className="mt-5 space-y-4 text-sm"><div><dt className="text-slate-400">Site ID</dt><dd className="mt-1 break-all font-medium text-slate-700">{site.siteId}</dd></div><div><dt className="text-slate-400">Created</dt><dd className="mt-1 font-medium text-slate-700">{formatDate(site.createdAt)}</dd></div><div><dt className="text-slate-400">Last updated</dt><dd className="mt-1 font-medium text-slate-700">{formatDate(site.updatedAt)}</dd></div></dl></section>
+                    <div className="flex flex-col gap-4">
+                        <SiteQrCodeButton key={site.siteId} siteId={site.siteId} />
+                        <section className="flex-1 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"><div className="flex items-center gap-2"><Clock3 className="size-5 text-blue-600" /><h2 className="font-semibold text-slate-900">Record</h2></div><dl className="mt-5 space-y-4 text-sm"><div><dt className="text-slate-400">Site ID</dt><dd className="mt-1 break-all font-medium text-slate-700">{site.siteId}</dd></div><div><dt className="text-slate-400">Created</dt><dd className="mt-1 font-medium text-slate-700">{formatDate(site.createdAt)}</dd></div><div><dt className="text-slate-400">Last updated</dt><dd className="mt-1 font-medium text-slate-700">{formatDate(site.updatedAt)}</dd></div></dl></section>
+                    </div>
 
                     <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm lg:col-span-2"><div className="flex items-center justify-between gap-3"><div className="flex items-center gap-2"><CalendarDays className="size-5 text-blue-600" /><h2 className="font-semibold text-slate-900">Schedules</h2></div><span className="rounded-full bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-700">{assignedSchedules.length}</span></div>{assignedSchedules.length === 0 ? <p className="mt-5 text-sm text-slate-500">No schedules assigned yet.</p> : <ul className="mt-4 space-y-2">{assignedSchedules.map((schedule) => <li key={schedule.scheduleId}><Link to={`/manager/schedules/${schedule.scheduleId}/edit`} className="flex items-center justify-between gap-4 rounded-xl bg-slate-50 px-4 py-3 transition hover:bg-blue-50 focus:outline-none focus:ring-4 focus:ring-blue-100"><span className="font-medium text-slate-800">{schedule.name || "Unnamed schedule"}</span><span className="text-sm font-semibold text-blue-700">Edit schedule</span></Link></li>)}</ul>}</section>
 
