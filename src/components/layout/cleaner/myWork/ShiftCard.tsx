@@ -1,5 +1,6 @@
-import { Building2, Clock3 } from "lucide-react";
+import { ArrowRight, Building2, Clock3, LogOut, ScanLine } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { canRecordAttendance, type AttendanceAction } from "@/lib/attendance";
 import { clockingInformation, formatShiftDateTime, formatShiftTime, londonDate, type Shift, type ShiftStatus } from "@/lib/shifts";
 
 const statuses: Record<ShiftStatus, { label: string; className: string }> = {
@@ -10,12 +11,13 @@ const statuses: Record<ShiftStatus, { label: string; className: string }> = {
     SCHEDULED: { label: "Scheduled", className: "bg-slate-50 text-slate-700" },
 };
 
-export function ShiftCard({ shift, now }: { shift: Shift; now: number }) {
+export function ShiftCard({ shift, now, onClock }: { shift: Shift; now: number; onClock: (action: AttendanceAction) => void }) {
     const status = statuses[shift.status];
     const overnight = londonDate(shift.scheduledStart) !== londonDate(shift.scheduledEnd);
     const information = clockingInformation(shift, now);
+    const actions = (["clockIn", "clockOut"] as const).filter((action) => canRecordAttendance(shift, action));
     return (
-        <article className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+        <article className={`rounded-2xl border bg-white p-5 shadow-sm ${actions.length ? "border-emerald-200 ring-1 ring-emerald-100" : "border-slate-200"}`}>
             <div className="flex flex-wrap items-start justify-between gap-3">
                 <h3 className="flex min-w-0 items-center gap-2 text-lg font-semibold text-slate-900">
                     <Building2 className="size-5 shrink-0 text-blue-600" aria-hidden="true" />
@@ -40,6 +42,13 @@ export function ShiftCard({ shift, now }: { shift: Shift; now: number }) {
                     {information.map((text, index) => <p key={text} className={index === 0 ? "font-semibold" : ""}>{text}</p>)}
                 </div>
             )}
+            {actions.map((action) => (
+                <button key={action} type="button" onClick={() => onClock(action)} className="group mt-4 flex min-h-14 w-full items-center gap-3 rounded-xl bg-emerald-600 px-4 py-3 text-left text-white shadow-sm shadow-emerald-600/20 transition hover:bg-emerald-700 hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600 active:bg-emerald-800">
+                    <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-white/15">{action === "clockIn" ? <ScanLine className="size-5" aria-hidden="true" /> : <LogOut className="size-5" aria-hidden="true" />}</span>
+                    <span className="flex-1"><span className="block font-semibold">{action === "clockIn" ? "Clock in" : "Clock out"}</span><span className="block text-xs text-emerald-50">Scan your site's QR code</span></span>
+                    <ArrowRight className="size-5 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
+                </button>
+            ))}
         </article>
     );
 }

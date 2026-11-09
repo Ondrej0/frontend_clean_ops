@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
-import { CalendarDays, RefreshCw } from "lucide-react";
+import { CalendarDays, CheckCircle2, RefreshCw } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { ShiftCard } from "@/components/layout/cleaner/myWork/ShiftCard";
-import { formatShiftDate, getShifts, groupShiftsByDay, londonDate, nextShiftRefresh, type ShiftsResponse } from "@/lib/shifts";
+import { AttendanceScanner } from "@/components/layout/cleaner/myWork/AttendanceScanner";
+import type { AttendanceAction } from "@/lib/attendance";
+import { formatShiftDate, getShifts, groupShiftsByDay, londonDate, nextShiftRefresh, type Shift, type ShiftsResponse } from "@/lib/shifts";
 
 export function MyWork() {
     const [data, setData] = useState<ShiftsResponse | null>(null);
@@ -10,6 +12,14 @@ export function MyWork() {
     const [error, setError] = useState("");
     const [now, setNow] = useState(Date.now);
     const [attempt, setAttempt] = useState(0);
+    const [scanner, setScanner] = useState<{ shift: Shift; action: AttendanceAction } | null>(null);
+    const [notice, setNotice] = useState("");
+
+    function closeScanner() {
+        setScanner(null);
+        setLoading(true);
+        setAttempt((value) => value + 1);
+    }
 
     useEffect(() => {
         let active = true;
@@ -73,6 +83,7 @@ export function MyWork() {
                     <h1 className="text-3xl font-bold tracking-tight text-slate-950">My Work</h1>
                     <p className="mt-2 text-slate-500">Your shifts and clocking availability. All dates and times are in Europe/London.</p>
                 </div>
+                {notice && <div role="status" className="mb-5 flex items-center gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm font-medium text-emerald-800"><CheckCircle2 className="size-5 shrink-0" aria-hidden="true" />{notice}</div>}
                 {loading && <div role="status" className="rounded-2xl border border-slate-200 bg-white p-6 text-slate-500 shadow-sm">Loading shifts…</div>}
                 {!loading && error && (
                     <div role="alert" className="flex flex-col gap-4 rounded-2xl border border-red-200 bg-red-50 p-4 text-red-700 sm:flex-row sm:items-center sm:justify-between">
@@ -104,7 +115,7 @@ export function MyWork() {
                                                     {day.date === today && <Badge className="bg-blue-600 text-white">Today</Badge>}
                                                 </div>
                                                 {day.shifts.length === 0 ? <p className="text-sm text-slate-500">No shifts</p> : (
-                                                    <div className="grid gap-4 lg:grid-cols-2">{day.shifts.map((shift) => <ShiftCard key={shift.id} shift={shift} now={now} />)}</div>
+                                                    <div className="grid gap-4 lg:grid-cols-2">{day.shifts.map((shift) => <ShiftCard key={shift.id} shift={shift} now={now} onClock={(action) => { setNotice(""); setScanner({ shift, action }); }} />)}</div>
                                                 )}
                                             </section>
                                         ))}
@@ -115,6 +126,15 @@ export function MyWork() {
                     </>
                 )}
             </div>
+            {scanner && <AttendanceScanner
+                shift={(!error && data?.shifts.find((shift) => shift.id === scanner.shift.id)) || { ...scanner.shift, canClockIn: false, canClockOut: false }}
+                action={scanner.action}
+                onClose={closeScanner}
+                onRecorded={() => {
+                    setNotice(`${scanner.action === "clockIn" ? "Clock-in" : "Clock-out"} submitted for ${scanner.shift.site.name}.`);
+                    closeScanner();
+                }}
+            />}
         </main>
     );
 }
