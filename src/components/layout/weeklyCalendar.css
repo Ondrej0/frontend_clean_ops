@@ -1,0 +1,110 @@
+.weekly-calendar {
+    --fc-border-color: #e8eef5;
+    --fc-today-bg-color: rgb(239 246 255 / 55%);
+    --fc-highlight-color: rgb(59 130 246 / 13%);
+    --fc-neutral-bg-color: #f8fafc;
+    --fc-page-bg-color: #fff;
+}
+
+.weekly-calendar .fc {
+    font-family: inherit;
+    font-size: 0.8125rem;
+    color: #334155;
+}
+
+.weekly-calendar .fc .fc-scrollgrid {
+    border: 0;
+}
+
+.weekly-calendar .fc .fc-col-header-cell {
+    background: #f8fafc;
+    border-bottom: 1px solid #dbe5f1;
+}
+
+.weekly-calendar .fc .fc-col-header-cell-cushion {
+    padding: 17px 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.025em;
+    color: #475569;
+}
+
+.weekly-calendar .fc .fc-col-header-cell.fc-day-today {
+    background: #eff6ff;
+    box-shadow: inset 0 -3px #3b82f6;
+}
+
+.weekly-calendar .fc .fc-day-today .fc-col-header-cell-cushion {
+    color: #1d4ed8;
+    font-weight: 700;
+}
+
+.weekly-calendar .fc .fc-timegrid-axis,
+.weekly-calendar .fc .fc-timegrid-slot-label {
+    background: #f8fafc;
+}
+
+.weekly-calendar .fc .fc-timegrid-slot-label-cushion {
+    padding: 0 12px;
+    color: #64748b;
+    font-size: 0.6875rem;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+}
+
+.weekly-calendar .fc .fc-timegrid-slot {
+    height: 1.65rem;
+}
+
+.weekly-calendar .fc .fc-timegrid-slot-minor {
+    border-top: 1px dotted #f0f3f8;
+}
+
+.weekly-calendar .fc .fc-timegrid-event {
+    border-width: 1px 1px 1px 3px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgb(15 23 42 / 5%);
+}
+
+.weekly-calendar .fc .fc-timegrid-event .fc-event-main {
+    padding: 4px 6px;
+}
+
+.weekly-calendar .fc .fc-event-time {
+    margin-bottom: 3px;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+}
+
+.weekly-calendar .fc .fc-event-title {
+    font-weight: 600;
+}
+
+.weekly-calendar .fc .fc-event:hover {
+    filter: brightness(0.97);
+    box-shadow: 0 3px 8px rgb(15 23 42 / 10%);
+}
+
+.weekly-calendar .fc .fc-event:focus-visible {
+    outline: 2px solid #2563eb;
+    outline-offset: 2px;
+}
+
+.weekly-calendar .fc .fc-event-mirror {
+    opacity: 0.8;
+    border-style: dashed;
+}
+
+.weekly-calendar .fc .fc-timegrid-event-short .fc-event-main {
+    padding: 1px 4px;
+}
+
+.weekly-calendar .fc .fc-timegrid-event-short .fc-event-time {
+    margin-bottom: 0;
+}
+
+.weekly-calendar-scroll {
+    scrollbar-color: #cbd5e1 #f8fafc;
+    scrollbar-width: thin;
+}
