@@ -94,8 +94,8 @@ function App() {
                         />
 
                         <Route
-                            path="/cleaner/clock-in"
-                            element={<h1>Cleaner - Clock In</h1>}
+                            path="/cleaner/opportunities"
+                            element={<h1>Cleaner - Opportunities</h1>}
                         />
 
                         <Route

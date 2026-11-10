@@ -34,7 +34,7 @@ const items = [
     },
     {
         title: "Opportunities",
-        url: "/cleaner/clock-in",
+        url: "/cleaner/opportunities",
         icon: Clock,
     },
     {
