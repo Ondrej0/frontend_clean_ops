@@ -138,8 +138,67 @@ html {
   }
 }
 
+/* Seven equal tabs keep the extra clock-in action exactly in the centre. */
+.app-navigation-menu.has-quick-action {
+  gap: 0;
+}
+
+.app-navigation-clock-in {
+  display: flex;
+  width: 100%;
+  max-width: 5rem;
+  height: 64px;
+  margin: -9px auto 0;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 4px;
+  border: 0;
+  border-radius: 16px;
+  background: linear-gradient(145deg, #059669, #047857);
+  color: white;
+  box-shadow: 0 4px 12px rgb(4 120 87 / 25%);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.app-navigation-clock-in svg {
+  width: 26px;
+  height: 26px;
+}
+
+.app-navigation-clock-in span {
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 14px;
+  white-space: nowrap;
+}
+
+.app-navigation-clock-in:hover {
+  background: #047857;
+}
+
+.app-navigation-clock-in:focus-visible {
+  outline: 3px solid #0f172a;
+  outline-offset: 2px;
+}
+
+@container (min-width: 6rem) {
+  .app-navigation-clock-in span {
+    font-size: 12px;
+  }
+}
+
 /* Tablets keep the bottom bar, including large iPads in landscape. */
 @media (min-width: 80rem) and (hover: hover) and (pointer: fine) {
+  .app-navigation-quick-action {
+    display: none;
+  }
+
+  .app-navigation-menu.has-quick-action {
+    gap: 0.25rem;
+  }
+
   :root {
     --app-navigation-height: 0px;
   }

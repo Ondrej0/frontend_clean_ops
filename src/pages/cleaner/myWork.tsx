@@ -56,6 +56,7 @@ export function MyWork() {
         void refresh();
         window.addEventListener("focus", onFocus);
         window.addEventListener("pageshow", onFocus);
+        window.addEventListener("attendance-updated", onFocus);
         document.addEventListener("visibilitychange", onVisibility);
         return () => {
             active = false;
@@ -63,6 +64,7 @@ export function MyWork() {
             controller?.abort();
             window.removeEventListener("focus", onFocus);
             window.removeEventListener("pageshow", onFocus);
+            window.removeEventListener("attendance-updated", onFocus);
             document.removeEventListener("visibilitychange", onVisibility);
         };
     }, [attempt]);

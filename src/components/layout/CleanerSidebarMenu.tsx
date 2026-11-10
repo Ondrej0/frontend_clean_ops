@@ -1,4 +1,5 @@
 import { AppNavigationMenu } from "./AppNavigationMenu"
+import { QuickClock } from "./cleaner/QuickClock"
 
 import {
     Building2,
@@ -45,5 +46,5 @@ const items = [
 
 
 export function CleanerSidebarMenu() {
-    return <AppNavigationMenu items={items} />
+    return <AppNavigationMenu items={items} quickAction={<QuickClock />} />
 }
