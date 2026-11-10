@@ -16,6 +16,7 @@ import {MyWork} from "@/pages/cleaner/myWork.tsx";
 import {CleanerSites} from "@/pages/cleaner/sites.tsx";
 import {CleanerSiteDetails} from "@/pages/cleaner/siteDetails.tsx";
 import {MySchedule} from "@/pages/cleaner/schedule.tsx";
+import {CleanerProfile} from "@/pages/cleaner/profile.tsx";
 
 function App() {
     return (
@@ -100,7 +101,7 @@ function App() {
 
                         <Route
                             path="/cleaner/profile"
-                            element={<h1>Cleaner - Profile</h1>}
+                            element={<CleanerProfile />}
                         />
                     </Routes>
                 </div>

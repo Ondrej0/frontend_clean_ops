@@ -1,4 +1,4 @@
-import { config } from "@/config/config";
+import { config } from "../config/config.ts";
 
 export interface Employee {
     id: string;
@@ -21,6 +21,7 @@ export interface AssignedSite {
 }
 
 export interface Cleaner extends Employee {
+    address?: string | null;
     role: string;
     payRate: number | null;
     active: boolean;
@@ -39,6 +40,7 @@ export interface EditEmployeeRequest {
     phone: string | null;
     role: string;
     payRate: number | null;
+    address?: string;
 }
 
 interface GetCleanersResponse {
