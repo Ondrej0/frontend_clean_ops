@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import FullCalendar from "@fullcalendar/react";
+import { WeeklyCalendar } from "@/components/layout/WeeklyCalendar";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import { config } from "@/config/config.ts";
@@ -274,44 +274,20 @@ export function CreateSchedule() {
                         </div>
                     )}
 
-                    {/* Calendar */}
-                    <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
-                        <FullCalendar
-                            plugins={[
-                                timeGridPlugin,
-                                interactionPlugin,
-                            ]}
-                            initialView="timeGridWeek"
-
-                            dayHeaderContent={(arg) =>
-                                arg.date.toLocaleDateString("en-GB", {
-                                    weekday: "long",
-                                })
-                            }
-
-                            headerToolbar={{
-                                left: "",
-                                center: "",
-                                right: "",
-                            }}
-
-                            selectable={true}
-                            editable={true}
-                            selectMirror={true}
-                            allDaySlot={false}
-
-                            slotMinTime="06:00:00"
-                            slotMaxTime="23:00:00"
-
-                            height="auto"
-
-                            select={handleSelect}
-                            eventChange={handleEventChange}
-                            eventClick={handleEventClick}
-
-                            events={events}
-                        />
-                    </div>
+                    <WeeklyCalendar
+                        description="Drag to create, move or resize shifts. Click a shift to delete it."
+                        plugins={[timeGridPlugin, interactionPlugin]}
+                        selectable
+                        editable
+                        selectMirror
+                        slotMinTime="06:00:00"
+                        slotMaxTime="23:00:00"
+                        height="auto"
+                        select={handleSelect}
+                        eventChange={handleEventChange}
+                        eventClick={handleEventClick}
+                        events={events}
+                    />
                 </form>
             </div>
         </main>

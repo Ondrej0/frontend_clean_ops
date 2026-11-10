@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import FullCalendar from "@fullcalendar/react";
+import { WeeklyCalendar } from "@/components/layout/WeeklyCalendar";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import type { DateSelectArg, EventChangeArg, EventClickArg, EventInput } from "@fullcalendar/core";
-import { Building2, CalendarDays, Clock3, LoaderCircle, MapPin, Users } from "lucide-react";
+import { Building2, LoaderCircle, MapPin, Users } from "lucide-react";
 import { PageBackLink } from "@/components/layout/PageBackLink";
 import { AssignCleanerControl } from "@/components/layout/manager/schedules/AssignCleanerControl";
 import { config } from "@/config/config";
@@ -165,10 +165,21 @@ export function EditSchedule() {
                     </div>
                     {error && <div role="alert" className="mb-6 rounded-2xl border border-red-200 bg-red-50 p-4 text-red-700">{error}</div>}
                     {success && <div role="status" className="mb-6 rounded-2xl border border-blue-200 bg-blue-50 p-4 text-blue-700">{success}</div>}
-                    <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
-                        <div className="mb-5 flex items-start gap-3"><div className="flex size-10 items-center justify-center rounded-xl bg-blue-50 text-blue-600"><CalendarDays className="size-5" /></div><div><h2 className="font-semibold text-slate-900">Weekly schedule</h2><p className="mt-1 flex items-center gap-1.5 text-sm text-slate-500"><Clock3 className="size-3.5" />Drag to create, move or resize shifts. Click a shift to delete it.</p></div></div>
-                        <FullCalendar plugins={[timeGridPlugin, interactionPlugin]} initialView="timeGridWeek" initialDate={new Date()} dayHeaderContent={(arg) => arg.date.toLocaleDateString("en-GB", { weekday: "long" })} headerToolbar={{ left: "", center: "", right: "" }} selectable editable selectMirror allDaySlot={false} slotMinTime="06:00:00" slotMaxTime="23:00:00" height="auto" select={handleSelect} eventChange={handleEventChange} eventClick={handleEventClick} events={events} />
-                    </section>
+                    <WeeklyCalendar
+                        description="Drag to create, move or resize shifts. Click a shift to delete it."
+                        plugins={[timeGridPlugin, interactionPlugin]}
+                        initialDate={new Date()}
+                        selectable
+                        editable
+                        selectMirror
+                        slotMinTime="06:00:00"
+                        slotMaxTime="23:00:00"
+                        height="auto"
+                        select={handleSelect}
+                        eventChange={handleEventChange}
+                        eventClick={handleEventClick}
+                        events={events}
+                    />
                 </form>
             </div>
         </main>

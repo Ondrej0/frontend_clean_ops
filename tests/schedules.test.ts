@@ -48,7 +48,7 @@ test("all overlapping rules turn red across sites, including contained and ident
         site("b", [["MONDAY", "10:00:00", "11:00:00"], ["MONDAY", "09:00:00", "12:00:00"]]),
         site("c", [["MONDAY", "12:00:00", "13:00:00"], ["TUESDAY", "09:00:00", "12:00:00"]]),
     ]);
-    assert.deepEqual(events.map((event) => event.backgroundColor), ["#b91c1c", "#b91c1c", "#b91c1c", "#15803d", "#15803d"]);
+    assert.deepEqual(events.map((event) => event.backgroundColor), ["#fef2f2", "#fef2f2", "#fef2f2", "#f0fdf4", "#f0fdf4"]);
     assert.equal(events[0].title, "Site a · Weekly clean");
     assert.deepEqual(events[0].daysOfWeek, [1]);
     assert.deepEqual(events[0].duration, { seconds: 10800 });

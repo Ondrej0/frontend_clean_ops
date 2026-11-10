@@ -37,7 +37,7 @@ export function buildScheduleEvents(sites: SchedulesBySite[]) {
             )
         );
         const overlaps = conflicts.length > 0;
-        const color = overlaps ? "#b91c1c" : "#15803d";
+        const color = overlaps ? "#dc2626" : "#16a34a";
 
         return {
             id: rule.id,
@@ -46,9 +46,9 @@ export function buildScheduleEvents(sites: SchedulesBySite[]) {
             startTime: rule.startTime,
             // A duration preserves overnight rules in FullCalendar's weekly recurrence.
             duration: { seconds: rule.end - rule.start },
-            backgroundColor: color,
+            backgroundColor: overlaps ? "#fef2f2" : "#f0fdf4",
             borderColor: color,
-            textColor: "#ffffff",
+            textColor: overlaps ? "#991b1b" : "#166534",
             extendedProps: {
                 siteName: rule.siteName,
                 scheduleName: rule.scheduleName,
