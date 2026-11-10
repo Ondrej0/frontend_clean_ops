@@ -94,3 +94,23 @@ test("400, 404 and server failures are errors, never empty results", async (cont
         mock.mock.restore();
     }
 });
+
+test("malformed shift lists and invalid date ranges cannot become empty schedules", async (context) => {
+    const fetch = context.mock.method(globalThis, "fetch");
+    for (const changes of [
+        { shifts: null }, { shifts: {} }, { fromDate: "10/11/2026" },
+        { toDate: "" }, { fromDate: "2026-11-11" },
+    ]) {
+        fetch.mock.mockImplementation(async () => Response.json({ ...response, ...changes }));
+        await assert.rejects(getShifts(), { message: "Unexpected shifts response. Please try again." });
+    }
+});
+
+test("grouping sorts each day chronologically without changing the server's shift order", () => {
+    const late = { ...shift, id: "late", scheduledStart: "2026-11-07T15:00:00Z" };
+    const early = { ...shift, id: "early", scheduledStart: "2026-11-07T07:00:00Z" };
+    const data = { ...response, shifts: [late, early] };
+    const original = structuredClone(data);
+    assert.deepEqual(groupShiftsByDay(data)[3].shifts.map((item) => item.id), ["early", "late"]);
+    assert.deepEqual(data, original);
+});

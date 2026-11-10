@@ -9,39 +9,8 @@ import { PageBackLink } from "@/components/layout/PageBackLink";
 import { AssignCleanerControl } from "@/components/layout/manager/schedules/AssignCleanerControl";
 import { config } from "@/config/config";
 import type { Employee } from "@/lib/employee";
-import { assignCleaner, editSchedule, getSchedule, type ScheduleDetails, type ScheduleRuleRequest } from "@/lib/schedules";
-
-const dayNames = ["SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"];
-
-function dateForRule(dayOfWeek: string, time: string) {
-    const today = new Date();
-    const sunday = new Date(today.getFullYear(), today.getMonth(), today.getDate() - today.getDay());
-    const dayIndex = dayNames.indexOf(dayOfWeek.toUpperCase());
-    const [hours, minutes, seconds] = time.split(":").map(Number);
-    return new Date(sunday.getFullYear(), sunday.getMonth(), sunday.getDate() + Math.max(dayIndex, 0), hours, minutes, seconds || 0);
-}
-
-function rulesToEvents(schedule: ScheduleDetails): EventInput[] {
-    return (schedule.scheduleRules ?? []).map((rule) => ({
-        id: rule.scheduleRuleId,
-        title: "Shift",
-        start: dateForRule(rule.dayOfWeek, rule.startTime),
-        end: dateForRule(rule.dayOfWeek, rule.endTime),
-    }));
-}
-
-function eventsToRules(events: EventInput[]): ScheduleRuleRequest[] {
-    return events.flatMap((event) => {
-        if (!event.start || !event.end) return [];
-        const start = new Date(event.start as string | number | Date);
-        const end = new Date(event.end as string | number | Date);
-        return [{
-            dayOfWeek: dayNames[start.getDay()],
-            startTime: start.toTimeString().slice(0, 8),
-            endTime: end.toTimeString().slice(0, 8),
-        }];
-    });
-}
+import { assignCleaner, editSchedule, getSchedule, type ScheduleDetails } from "@/lib/schedules";
+import { eventsToRules, rulesToEvents } from "@/lib/scheduleEditor";
 
 function formatDate(value: string) {
     const date = new Date(value);

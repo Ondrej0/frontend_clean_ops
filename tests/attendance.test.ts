@@ -66,3 +66,37 @@ test("connection loss asks the cleaner to check status before a new scan", async
     await assert.rejects(recordAttendance("clockIn", shift, scannedId), /Check your shifts before scanning again/);
     assert.equal(fetch.mock.callCount(), 1);
 });
+
+test("a stalled attendance request aborts after 20 seconds without automatically submitting again", async (context) => {
+    context.mock.timers.enable({ apis: ["setTimeout"] });
+    let signal: AbortSignal | undefined;
+    const fetch = context.mock.method(globalThis, "fetch", (_url: string, init: RequestInit) => {
+        signal = init.signal!;
+        return new Promise<Response>((_resolve, reject) => {
+            signal!.addEventListener("abort", () => reject(new DOMException("Aborted", "AbortError")), { once: true });
+        });
+    });
+    const pending = recordAttendance("clockIn", shift, scannedId);
+    const rejection = assert.rejects(pending, /Check your shifts before scanning again/);
+    assert.ok(signal);
+    context.mock.timers.tick(19_999);
+    assert.equal(signal.aborted, false);
+    context.mock.timers.tick(1);
+    await rejection;
+    assert.equal(signal.aborted, true);
+    assert.equal(fetch.mock.callCount(), 1);
+});
+
+test("completed attendance requests clear their abort timer on success and failure", async (context) => {
+    context.mock.timers.enable({ apis: ["setTimeout"] });
+    const signals: AbortSignal[] = [];
+    context.mock.method(globalThis, "fetch", async (_url: string, init: RequestInit) => {
+        signals.push(init.signal!);
+        if (signals.length === 2) throw new TypeError("Failed to fetch");
+        return new Response(null, { status: 204 });
+    });
+    await recordAttendance("clockIn", shift, scannedId);
+    await assert.rejects(recordAttendance("clockIn", shift, scannedId), /Check your shifts/);
+    context.mock.timers.tick(20_000);
+    assert.deepEqual(signals.map((signal) => signal.aborted), [false, false]);
+});
