@@ -1,4 +1,5 @@
 import { AppNavigationMenu } from "./AppNavigationMenu"
+import { SignOutButton } from "./SignOutButton"
 
 import {
     LayoutDashboard,
@@ -39,5 +40,5 @@ const items = [
 
 
 export function ManagerSidebarMenu() {
-    return <AppNavigationMenu items={items} />
+    return <AppNavigationMenu items={items} trailingAction={<SignOutButton />} />
 }
