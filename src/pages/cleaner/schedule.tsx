@@ -37,6 +37,7 @@ export function MySchedule() {
                     <p className="mt-2 text-slate-500">Your assigned weekly cleaning hours across all your sites.</p>
                 </div>
 
+                <ScheduleCalendar />
                 {loading && <p role="status" className="rounded-2xl border border-slate-200 bg-white p-6 text-slate-500 shadow-sm">Loading schedules…</p>}
                 {!loading && error && (
                     <div role="alert" className="rounded-2xl border border-red-200 bg-red-50 p-6 text-red-700">
@@ -48,7 +49,6 @@ export function MySchedule() {
                 )}
                 {!loading && !error && (
                     <>
-                        <ScheduleCalendar sites={sites} />
                         {scheduleCount === 0 && (
                             <div className="mb-5 rounded-2xl border border-dashed border-blue-200 bg-blue-50/50 px-6 py-10 text-center">
                                 <CalendarDays className="mx-auto size-9 text-blue-500" aria-hidden="true" />

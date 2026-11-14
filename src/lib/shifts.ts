@@ -5,6 +5,7 @@ export type ShiftStatus = "SCHEDULED" | "IN_PROGRESS" | "COMPLETED" | "CANCELLED
 export interface Shift {
     id: string;
     site: { id: string; name: string };
+    scheduleName?: string | null;
     scheduledStart: string;
     scheduledEnd: string;
     actualStart: string | null;
@@ -25,8 +26,17 @@ export interface ShiftsResponse {
     shifts: Shift[];
 }
 
-export async function getShifts(signal?: AbortSignal): Promise<ShiftsResponse> {
+export interface ShiftDateRange {
+    fromDate: string;
+    toDate: string;
+}
+
+export async function getShifts(signal?: AbortSignal, range?: ShiftDateRange): Promise<ShiftsResponse> {
     const query = new URLSearchParams({ tenantId: config.testTenant, userId: config.testUser });
+    if (range) {
+        query.set("fromDate", range.fromDate);
+        query.set("toDate", range.toDate);
+    }
     const response = await fetch(`${config.apiBaseUrl}/api/shifts?${query}`, { signal, cache: "no-store" });
     if (!response.ok) {
         const fallback = response.status === 404

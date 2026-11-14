@@ -80,11 +80,24 @@ test("API uses configured IDs, supports cancellation and accepts empty results",
         assert.equal(url.pathname, "/api/shifts");
         assert.equal(url.searchParams.get("tenantId"), config.testTenant);
         assert.equal(url.searchParams.get("userId"), config.testUser);
+        assert.equal(url.searchParams.has("fromDate"), false);
+        assert.equal(url.searchParams.has("toDate"), false);
         assert.equal(init.signal, signal);
         assert.equal(init.cache, "no-store");
         return Response.json(response);
     });
     assert.deepEqual(await getShifts(signal), response);
+});
+
+test("calendar requests supply explicit inclusive dates without changing the default My Work window", async (context) => {
+    const range = { fromDate: "2026-11-02", toDate: "2026-11-08" };
+    context.mock.method(globalThis, "fetch", async (input: string) => {
+        const url = new URL(input);
+        assert.equal(url.searchParams.get("fromDate"), range.fromDate);
+        assert.equal(url.searchParams.get("toDate"), range.toDate);
+        return Response.json({ ...response, ...range });
+    });
+    assert.deepEqual(await getShifts(undefined, range), { ...response, ...range });
 });
 
 test("400, 404 and server failures are errors, never empty results", async (context) => {
