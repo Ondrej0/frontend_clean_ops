@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "test": "node --test tests/*.test.ts",
+    "test": "node --import ./tests/sessionSetup.ts --test tests/*.test.ts",
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",

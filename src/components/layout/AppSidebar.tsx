@@ -1,10 +1,12 @@
 import { Sparkles } from "lucide-react"
 import { ManagerSidebarMenu } from "./ManagerSidebarMenu"
 import { CleanerSidebarMenu } from "./CleanerSidebarMenu"
-import { mockUser } from "@/mock/mockUser"
+import type { SessionUser } from "@/lib/session"
 
-export function AppSidebar() {
-    const isManager = mockUser.role === "MANAGER"
+
+export function AppSidebar({ user }: { user: SessionUser }) {
+
+    const isManager = user.role === "MANAGER"
 
     return (
         <nav className="app-navigation" aria-label="Main navigation">

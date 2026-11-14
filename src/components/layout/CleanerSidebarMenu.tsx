@@ -1,5 +1,6 @@
 import { AppNavigationMenu } from "./AppNavigationMenu"
 import { QuickClock } from "./cleaner/QuickClock"
+import { SignOutButton } from "./SignOutButton"
 
 import {
     Building2,
@@ -46,5 +47,5 @@ const items = [
 
 
 export function CleanerSidebarMenu() {
-    return <AppNavigationMenu items={items} quickAction={<QuickClock />} />
+    return <AppNavigationMenu items={items} quickAction={<QuickClock />} trailingAction={<SignOutButton />} />
 }

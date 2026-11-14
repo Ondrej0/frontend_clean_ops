@@ -1,3 +1,4 @@
+import { identity } from "@/lib/sessionIdentity";
 import { useState } from "react";
 import type { ChangeEvent, SubmitEvent } from "react";
 import {config} from "@/config/config.ts";
@@ -13,7 +14,7 @@ interface Site {
 
 export function CreateSiteForm() {
     const [site, setSite] = useState<Site>({
-        tenantId: config.testTenant,
+        tenantId: identity.tenantId,
         name: "",
         addressLine1: "",
         city: "",

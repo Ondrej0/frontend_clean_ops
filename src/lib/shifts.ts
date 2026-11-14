@@ -1,3 +1,4 @@
+import { identity } from "./sessionIdentity.ts";
 import { config } from "../config/config.ts";
 
 export type ShiftStatus = "SCHEDULED" | "IN_PROGRESS" | "COMPLETED" | "CANCELLED" | "NO_SHOW";
@@ -32,7 +33,7 @@ export interface ShiftDateRange {
 }
 
 export async function getShifts(signal?: AbortSignal, range?: ShiftDateRange): Promise<ShiftsResponse> {
-    const query = new URLSearchParams({ tenantId: config.testTenant, userId: config.testUser });
+    const query = new URLSearchParams({ tenantId: identity.tenantId, userId: identity.userId });
     if (range) {
         query.set("fromDate", range.fromDate);
         query.set("toDate", range.toDate);

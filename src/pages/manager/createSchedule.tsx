@@ -1,3 +1,4 @@
+import { identity } from "@/lib/sessionIdentity";
 import { useEffect, useState } from "react";
 import { WeeklyCalendar } from "@/components/layout/WeeklyCalendar";
 import timeGridPlugin from "@fullcalendar/timegrid";
@@ -77,7 +78,7 @@ export function CreateSchedule() {
         }
 
         const request: CreateScheduleRequest = {
-            tenantId: config.testTenant,
+            tenantId: identity.tenantId,
             siteId: selectedSiteId,
             name: name,
             scheduleRule: scheduleRules,

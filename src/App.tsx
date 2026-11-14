@@ -1,6 +1,9 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom"
+import type { SessionUser } from "@/lib/session";
+import { canVisitRolePath, homeForRole } from "@/lib/sessionRouting";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom"
 
 import { AppSidebar } from "@/components/layout/AppSidebar"
+import { EmployeeSession } from "@/components/layout/EmployeeSession"
 import { ManagerDashboard} from "@/pages/manager/managerDashboard.tsx";
 import {Employees} from "@/pages/manager/employees.tsx";
 import {ManagerSites} from "@/pages/manager/managerSites.tsx";
@@ -18,11 +21,13 @@ import {CleanerSiteDetails} from "@/pages/cleaner/siteDetails.tsx";
 import {MySchedule} from "@/pages/cleaner/schedule.tsx";
 import {CleanerProfile} from "@/pages/cleaner/profile.tsx";
 
-function App() {
+function AppPages({ user }: { user: SessionUser }) {
+    const location = useLocation();
+    if (!canVisitRolePath(user.role, location.pathname)) return <Navigate to={homeForRole(user.role)} replace />;
     return (
-        <BrowserRouter>
+        <>
             <div className="app-shell">
-                <AppSidebar />
+                <AppSidebar user={user} />
 
                 <div className="app-content bg-slate-50">
                     <Routes>
@@ -103,12 +108,15 @@ function App() {
                             path="/cleaner/profile"
                             element={<CleanerProfile />}
                         />
-                    </Routes>
+                    <Route path="*" element={<Navigate to={homeForRole(user.role)} replace />} /></Routes>
                 </div>
 
             </div>
-        </BrowserRouter>
+        </>
     )
 }
 
+function App() {
+    return <BrowserRouter><EmployeeSession>{(user) => <AppPages key={user.id} user={user} />}</EmployeeSession></BrowserRouter>;
+}
 export default App

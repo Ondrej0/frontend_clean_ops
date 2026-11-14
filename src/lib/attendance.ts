@@ -1,3 +1,4 @@
+import { identity } from "./sessionIdentity.ts";
 import { config } from "../config/config.ts";
 import type { Shift } from "./shifts.ts";
 
@@ -26,11 +27,11 @@ export async function recordAttendance(action: AttendanceAction, shift: Shift, q
     if (!canRecordAttendance(shift, action)) throw new Error("This action is no longer available. Check your shifts for the latest status.");
 
     const body: AttendanceRequest = {
-        tenantId: config.testTenant,
+        tenantId: identity.tenantId,
         // This must always be the scanned UUID, never shift.site.id.
         siteId,
         shiftId: shift.id,
-        userId: config.testUser,
+        userId: identity.userId,
     };
     let response: Response;
     const controller = new AbortController();

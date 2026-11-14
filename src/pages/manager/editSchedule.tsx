@@ -1,3 +1,4 @@
+import { identity } from "@/lib/sessionIdentity";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { WeeklyCalendar } from "@/components/layout/WeeklyCalendar";
@@ -7,7 +8,6 @@ import type { DateSelectArg, EventChangeArg, EventClickArg, EventInput } from "@
 import { Building2, LoaderCircle, MapPin, Users } from "lucide-react";
 import { PageBackLink } from "@/components/layout/PageBackLink";
 import { AssignCleanerControl } from "@/components/layout/manager/schedules/AssignCleanerControl";
-import { config } from "@/config/config";
 import type { Employee } from "@/lib/employee";
 import { assignCleaner, editSchedule, getSchedule, type ScheduleDetails } from "@/lib/schedules";
 import { eventsToRules, rulesToEvents } from "@/lib/scheduleEditor";
@@ -74,7 +74,7 @@ export function EditSchedule() {
         setSuccess("");
         try {
             await editSchedule({
-                tenantId: config.testTenant,
+                tenantId: identity.tenantId,
                 scheduleId,
                 name: name.trim(),
                 scheduleRule: eventsToRules(events),

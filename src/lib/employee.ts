@@ -1,4 +1,6 @@
+import { identity } from "./sessionIdentity.ts";
 import { config } from "../config/config.ts";
+import { sessionRequest } from "./session.ts";
 
 export interface Employee {
     id: string;
@@ -50,7 +52,7 @@ interface GetCleanersResponse {
 /** Retrieves the cleaners that belong to the configured tenant. */
 export async function getCleaners(): Promise<Employee[]> {
     const response = await fetch(
-        `${config.apiBaseUrl}/api/cleaner?tenantId=${config.testTenant}`
+        `${config.apiBaseUrl}/api/cleaner?tenantId=${identity.tenantId}`
     );
 
     if (!response.ok) {
@@ -74,22 +76,9 @@ export async function getCleaner(cleanerId: string): Promise<Cleaner> {
 
 /** Updates the editable details for one cleaner. */
 export async function editEmployee(cleanerId: string, request: EditEmployeeRequest): Promise<void> {
-    const response = await fetch(`${config.apiBaseUrl}/api/cleaner/${encodeURIComponent(cleanerId)}`, {
+    await sessionRequest(`/api/cleaner/${encodeURIComponent(cleanerId)}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(request),
-    });
-
-    if (!response.ok) {
-        let message = "Failed to save employee changes.";
-        try {
-            const data: unknown = await response.json();
-            if (typeof data === "object" && data !== null && "message" in data && typeof data.message === "string") {
-                message = data.message;
-            }
-        } catch {
-            // The API may return an empty or non-JSON error response.
-        }
-        throw new Error(message);
-    }
+    }, "Failed to save employee changes.");
 }

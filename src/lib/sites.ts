@@ -1,3 +1,4 @@
+import { identity } from "./sessionIdentity.ts";
 import { config } from "../config/config.ts";
 
 export interface Site {
@@ -59,7 +60,7 @@ interface GetSitesResponse {
 
 /** Retrieves tenant sites, optionally restricted to the given user. */
 export async function getSites(userId?: string): Promise<Site[]> {
-    const query = new URLSearchParams({ tenantId: config.testTenant });
+    const query = new URLSearchParams({ tenantId: identity.tenantId });
     if (userId !== undefined) query.set("userId", userId);
 
     const response = await fetch(

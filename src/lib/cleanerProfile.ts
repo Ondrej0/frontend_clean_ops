@@ -1,4 +1,4 @@
-import { config } from "../config/config.ts";
+import { identity } from "./sessionIdentity.ts";
 import { editEmployee, getCleaner, type Cleaner } from "./employee.ts";
 
 /** Personal details only: employment fields must never come from the form. */
@@ -35,9 +35,9 @@ export async function saveCleanerProfile(fields: CleanerProfileFields): Promise<
 
     // This PUT requires role and payRate. Read them immediately before saving,
     // and explicitly whitelist form values rather than spreading a form object.
-    const current = await getCleaner(config.testUser);
+    const current = await getCleaner(identity.userId);
     const request = {
-        tenantId: config.testTenant,
+        tenantId: identity.tenantId,
         firstName: fields.firstName.trim(),
         lastName: fields.lastName.trim(),
         email: fields.email.trim(),
@@ -46,6 +46,6 @@ export async function saveCleanerProfile(fields: CleanerProfileFields): Promise<
         role: current.role,
         payRate: current.payRate,
     };
-    await editEmployee(config.testUser, request);
+    await editEmployee(identity.userId, request);
     return { ...current, ...request };
 }

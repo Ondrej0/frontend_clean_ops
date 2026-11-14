@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { CalendarDays, RefreshCw } from "lucide-react";
 import { ScheduleSiteCard } from "@/components/layout/manager/schedules/ScheduleSiteCard";
 import { ScheduleCalendar } from "@/components/layout/cleaner/ScheduleCalendar";
-import { config } from "@/config/config";
-import { getSchedulesBySites, type SchedulesBySite } from "@/lib/schedules";
+import type { SchedulesBySite } from "@/lib/schedules";
+import { getMySchedules } from "@/lib/employeeFlags";
 
 export function MySchedule() {
     const [sites, setSites] = useState<SchedulesBySite[]>([]);
@@ -13,7 +13,7 @@ export function MySchedule() {
 
     useEffect(() => {
         let active = true;
-        getSchedulesBySites(config.testUser)
+        getMySchedules()
             .then((data) => active && setSites(data))
             .catch(() => active && setError("We couldn't load your schedules. Please try again."))
             .finally(() => active && setLoading(false));

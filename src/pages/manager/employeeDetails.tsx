@@ -1,10 +1,10 @@
+import { identity } from "@/lib/sessionIdentity";
 import { useEffect, useState } from "react";
 import type { ChangeEvent } from "react";
 import { Building2, CalendarDays, CheckCircle2, Clock3, LoaderCircle, Mail, MapPin, Pencil, Phone, PoundSterling, Save, User, XCircle } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 import { PageBackLink } from "@/components/layout/PageBackLink";
 import { editEmployee, getCleaner, type Cleaner, type EditEmployeeRequest } from "@/lib/employee";
-import { config } from "@/config/config";
 
 function formatDate(value: string) {
     const date = new Date(value);
@@ -142,7 +142,7 @@ export function EmployeeDetails() {
         setSaveError("");
         try {
             await editEmployee(cleanerId, {
-                tenantId: config.testTenant,
+                tenantId: identity.tenantId,
                 ...editableFields,
                 firstName: editableFields.firstName.trim(),
                 lastName: editableFields.lastName.trim(),

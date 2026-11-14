@@ -1,7 +1,7 @@
+import { identity } from "@/lib/sessionIdentity";
 import { useEffect, useState } from "react";
 import { Building2, RefreshCw } from "lucide-react";
 import { SiteCard } from "@/components/layout/manager/sites/SiteCard";
-import { config } from "@/config/config";
 import { getSites, type Site } from "@/lib/sites";
 
 export function CleanerSites() {
@@ -12,7 +12,7 @@ export function CleanerSites() {
 
     useEffect(() => {
         let active = true;
-        getSites(config.testUser)
+        getSites(identity.userId)
             .then((data) => active && setSites(data))
             .catch(() => active && setError("We couldn't load your sites. Please try again."))
             .finally(() => active && setLoading(false));

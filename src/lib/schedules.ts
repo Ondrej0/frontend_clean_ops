@@ -1,3 +1,4 @@
+import { identity } from "./sessionIdentity.ts";
 import { config } from "../config/config.ts";
 
 export interface ScheduleRule {
@@ -56,7 +57,7 @@ export interface SchedulesBySite {
 
 /** Retrieves active schedules, optionally restricted to the given user. */
 export async function getSchedulesBySites(userId?: string): Promise<SchedulesBySite[]> {
-    const query = new URLSearchParams({ tenantId: config.testTenant });
+    const query = new URLSearchParams({ tenantId: identity.tenantId });
     if (userId !== undefined) query.set("userId", userId);
     const response = await fetch(
         `${config.apiBaseUrl}/api/schedules/by-site?${query.toString()}`
@@ -109,7 +110,7 @@ export async function editSchedule(request: EditScheduleRequest): Promise<void> 
 
 export async function assignCleaner(scheduleId: string, cleanerId: string): Promise<void> {
     const query = new URLSearchParams({
-        tenantId: config.testTenant,
+        tenantId: identity.tenantId,
         scheduleId,
         cleanerId,
     });

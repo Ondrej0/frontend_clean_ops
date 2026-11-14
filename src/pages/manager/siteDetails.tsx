@@ -1,3 +1,4 @@
+import { identity } from "@/lib/sessionIdentity";
 import { useEffect, useState } from "react";
 import type { ChangeEvent } from "react";
 import { Building2, CalendarDays, CheckCircle2, Clock3, LoaderCircle, Mail, MapPin, Pencil, Phone, PoundSterling, Save, User, XCircle } from "lucide-react";
@@ -5,7 +6,6 @@ import { Link, useParams } from "react-router-dom";
 import { SiteQrCodeButton } from "@/components/layout/manager/sites/SiteQrCodeButton";
 import { PageBackLink } from "@/components/layout/PageBackLink";
 import { editSite, getSite, type EditSiteRequest, type SiteDetails as SiteDetailsData } from "@/lib/sites";
-import { config } from "@/config/config";
 
 function formatDate(value: string) {
     const date = new Date(value);
@@ -130,7 +130,7 @@ export function SiteDetails() {
         setSaving(true);
         setSaveError("");
         try {
-            await editSite(siteId, { tenantId: config.testTenant, siteId, ...editableFields, name: editableFields.name.trim() });
+            await editSite(siteId, { tenantId: identity.tenantId, siteId, ...editableFields, name: editableFields.name.trim() });
             await loadSite();
             setIsEditing(false);
         } catch (saveFailure) {

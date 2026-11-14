@@ -8,7 +8,7 @@ type NavigationItem = {
     icon: LucideIcon
 }
 
-export function AppNavigationMenu({ items, quickAction }: { items: NavigationItem[]; quickAction?: ReactNode }) {
+export function AppNavigationMenu({ items, quickAction, trailingAction }: { items: NavigationItem[]; quickAction?: ReactNode; trailingAction?: ReactNode }) {
     const renderItem = (item: NavigationItem) => (
         <li className="app-navigation-item" key={item.url}>
             <NavLink
@@ -29,6 +29,7 @@ export function AppNavigationMenu({ items, quickAction }: { items: NavigationIte
             {items.slice(0, 3).map(renderItem)}
             {quickAction && <li className="app-navigation-item app-navigation-quick-action">{quickAction}</li>}
             {items.slice(3).map(renderItem)}
+            {trailingAction && <li className="app-navigation-item">{trailingAction}</li>}
         </ul>
     )
 }

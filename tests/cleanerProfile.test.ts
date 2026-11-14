@@ -26,6 +26,7 @@ test("profile reads use the getCleanerData route for the current cleaner", async
 test("profile saves whitelist personal fields and preserve the latest employment values", async (context) => {
     const requests: RequestInit[] = [];
     context.mock.method(globalThis, "fetch", async (url: string, init?: RequestInit) => {
+        if (url.endsWith("/csrf")) return Response.json({ token: "token" });
         assert.equal(url, `${config.apiBaseUrl}/api/cleaner/${config.testUser}`);
         if (!init) return Response.json({ ...cleaner, payRate: 22 });
         requests.push(init);
@@ -39,7 +40,8 @@ test("profile saves whitelist personal fields and preserve the latest employment
     });
     assert.equal(requests.length, 1);
     assert.equal(requests[0].method, "PUT");
-    assert.deepEqual(requests[0].headers, { "Content-Type": "application/json" });
+    assert.equal(new Headers(requests[0].headers).get("Content-Type"), "application/json");
+    assert.equal(new Headers(requests[0].headers).get("X-CSRF-TOKEN"), "token");
     assert.deepEqual(JSON.parse(requests[0].body as string), {
         tenantId: config.testTenant, firstName: "Janet", lastName: "Doe", email: "janet@example.com",
         phone: null, address: "20 High Street\nLondon", role: "CLEANER", payRate: 22,
@@ -52,6 +54,7 @@ test("profile saves whitelist personal fields and preserve the latest employment
 
 test("optional address and phone can be cleared", async (context) => {
     context.mock.method(globalThis, "fetch", async (_url: string, init?: RequestInit) => {
+        if (_url.endsWith("/csrf")) return Response.json({ token: "token" });
         if (!init) return Response.json(cleaner);
         const request = JSON.parse(init.body as string);
         assert.equal(request.address, "");
@@ -83,8 +86,9 @@ test("a failed profile refresh prevents a write with stale employment data", asy
 
 test("a rejected save is not reported as successful or automatically retried", async (context) => {
     const fetch = context.mock.method(globalThis, "fetch", async (_url: string, init?: RequestInit) => {
+        if (_url.endsWith("/csrf")) return Response.json({ token: "token" });
         return init ? new Response(null, { status: 400 }) : Response.json(cleaner);
     });
     await assert.rejects(saveCleanerProfile(getProfileFields(cleaner)), /Failed to save employee/);
-    assert.equal(fetch.mock.callCount(), 2);
+    assert.equal(fetch.mock.callCount(), 3);
 });

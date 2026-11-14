@@ -1,8 +1,8 @@
+import { identity } from "@/lib/sessionIdentity";
 import { useEffect, useState } from "react";
 import type { SubmitEvent } from "react";
 import { Building2, CalendarDays, LoaderCircle, Pencil, Save, User } from "lucide-react";
 import { Link } from "react-router-dom";
-import { config } from "@/config/config";
 import { getCleaner, type Cleaner } from "@/lib/employee";
 import { getProfileFields, saveCleanerProfile, validateProfile, type CleanerProfileFields } from "@/lib/cleanerProfile";
 
@@ -28,7 +28,7 @@ export function CleanerProfile() {
 
     useEffect(() => {
         let active = true;
-        getCleaner(config.testUser)
+        getCleaner(identity.userId)
             .then((data) => {
                 if (active) {
                     setCleaner(data);

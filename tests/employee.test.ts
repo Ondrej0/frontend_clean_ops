@@ -49,9 +49,12 @@ test("missing employee details reject instead of displaying an empty profile", a
 test("manager employee edits preserve employment changes and explicit null and zero pay rates", async (context) => {
     const bodies: unknown[] = [];
     context.mock.method(globalThis, "fetch", async (url: string, init: RequestInit) => {
+        if (url.endsWith("/csrf")) return Response.json({ token: "token" });
         assert.equal(url, `${config.apiBaseUrl}/api/cleaner/cleaner%20%2F%3F%23`);
         assert.equal(init.method, "PUT");
-        assert.deepEqual(init.headers, { "Content-Type": "application/json" });
+        assert.equal(new Headers(init.headers).get("Content-Type"), "application/json");
+        assert.equal(new Headers(init.headers).get("X-CSRF-TOKEN"), "token");
+        assert.equal(init.credentials, "include");
         bodies.push(JSON.parse(init.body as string));
         return new Response(null, { status: 204 });
     });
@@ -68,10 +71,10 @@ test("employee save errors preserve server messages and fall back for unusable r
         ["null", "Failed to save employee changes."],
         ['{"message":{"email":"Invalid"}}', "Failed to save employee changes."],
     ]) {
-        fetch.mock.mockImplementation(async () => new Response(body, { status: 400 }));
+        fetch.mock.mockImplementation(async (url: string) => url.endsWith("/csrf") ? Response.json({ token: "token" }) : new Response(body, { status: 400 }));
         const before = fetch.mock.callCount();
         await assert.rejects(editEmployee(cleaner.id, request), { message });
-        assert.equal(fetch.mock.callCount(), before + 1);
+        assert.equal(fetch.mock.callCount(), before + 2);
     }
 });
 

@@ -1,6 +1,7 @@
+import { identity } from "@/lib/sessionIdentity";
 import { useState } from "react";
 import type { ChangeEvent, SubmitEvent } from "react";
-import {config} from "@/config/config.ts";
+import { sessionRequest } from "@/lib/session";
 import { PageBackLink } from "@/components/layout/PageBackLink";
 
 interface Employee {
@@ -15,7 +16,7 @@ interface Employee {
 export function CreateEmployeeForm() {
     const [employee, setEmployee] = useState<Employee>({
         // TODO: Replace with the authenticated manager's tenant ID
-        tenantId: config.testTenant,
+        tenantId: identity.tenantId,
         firstName: "",
         lastName: "",
         passwordHash: "",
@@ -49,7 +50,7 @@ export function CreateEmployeeForm() {
 
         try {
             //TODO add base URL to the end point, have a config file in the in here
-            const response = await fetch(`${config.apiBaseUrl}/api/cleaner`, {
+            const response = await sessionRequest("/api/cleaner", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
