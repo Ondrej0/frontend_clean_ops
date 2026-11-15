@@ -1,6 +1,8 @@
+import { getShifts } from "../src/lib/shifts.ts";
+import { getSchedulesBySites } from "../src/lib/schedules.ts";
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { getEmployeeFlags, getMyCalendarShifts, getMySchedules, overlapReportMessage, reportScheduleOverlaps, resolveEmployeeFlag } from "../src/lib/employeeFlags.ts";
+import { getEmployeeFlags, overlapReportMessage, reportScheduleOverlaps, resolveEmployeeFlag } from "../src/lib/employeeFlags.ts";
 import { getSession, signIn, signOut } from "../src/lib/session.ts";
 import { config } from "../src/config/config.ts";
 
@@ -61,14 +63,14 @@ test("calendar and recurring schedule reads use session-owned endpoints without 
         assert.equal(init.credentials, "include");
         assert.equal(url.searchParams.has("tenantId"), false);
         assert.equal(url.searchParams.has("userId"), false);
-        if (url.pathname === "/api/me/schedules") return Response.json([]);
-        assert.equal(url.pathname, "/api/me/shifts");
+        if (url.pathname === "/api/schedules/by-site") return Response.json([]);
+        assert.equal(url.pathname, "/api/shifts");
         assert.equal(url.searchParams.get("fromDate"), "2026-11-09");
         assert.equal(url.searchParams.get("toDate"), "2026-11-15");
-        return Response.json({ shifts: [] });
+        return Response.json({ shifts: [], fromDate: "2026-11-09", toDate: "2026-11-15", timezone: "Europe/London" });
     });
-    await getMyCalendarShifts({ fromDate: "2026-11-09", toDate: "2026-11-15" });
-    assert.deepEqual(await getMySchedules(), []);
+    await getShifts(undefined, { fromDate: "2026-11-09", toDate: "2026-11-15" });
+    assert.deepEqual(await getSchedulesBySites(), []);
 });
 
 test("unauthorized, forbidden and failed mutations surface errors without retrying", async (context) => {

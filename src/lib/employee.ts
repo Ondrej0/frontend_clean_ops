@@ -1,6 +1,5 @@
-import { identity } from "./sessionIdentity.ts";
+import { apiFetch, sessionRequest } from "./session.ts";
 import { config } from "../config/config.ts";
-import { sessionRequest } from "./session.ts";
 
 export interface Employee {
     id: string;
@@ -35,7 +34,6 @@ export interface Cleaner extends Employee {
 
 /** The fields accepted by PUT /api/cleaner/{cleanerId}. */
 export interface EditEmployeeRequest {
-    tenantId: string;
     firstName: string;
     lastName: string;
     email: string;
@@ -49,10 +47,10 @@ interface GetCleanersResponse {
     cleaners: Employee[];
 }
 
-/** Retrieves the cleaners that belong to the configured tenant. */
+/** Retrieves the cleaners that belong to the signed-in manager’s tenant. */
 export async function getCleaners(): Promise<Employee[]> {
-    const response = await fetch(
-        `${config.apiBaseUrl}/api/cleaner?tenantId=${identity.tenantId}`
+    const response = await apiFetch(
+        `${config.apiBaseUrl}/api/cleaner`
     );
 
     if (!response.ok) {
@@ -65,7 +63,7 @@ export async function getCleaners(): Promise<Employee[]> {
 
 /** Retrieves all available details for one cleaner. */
 export async function getCleaner(cleanerId: string): Promise<Cleaner> {
-    const response = await fetch(`${config.apiBaseUrl}/api/cleaner/${encodeURIComponent(cleanerId)}`);
+    const response = await apiFetch(`${config.apiBaseUrl}/api/cleaner/${encodeURIComponent(cleanerId)}`);
 
     if (!response.ok) {
         throw new Error("Failed to fetch cleaner");

@@ -4,7 +4,7 @@ import { config } from "../src/config/config.ts";
 import { assignCleaner, editSchedule, getSchedule, type EditScheduleRequest, type ScheduleDetails } from "../src/lib/schedules.ts";
 
 const request: EditScheduleRequest = {
-    tenantId: config.testTenant, scheduleId: "schedule & /?#", name: "Night clean",
+    scheduleId: "schedule & /?#", name: "Night clean",
     scheduleRule: [{ dayOfWeek: "SATURDAY", startTime: "22:00:00", endTime: "02:00:00" }],
 };
 
@@ -28,32 +28,36 @@ test("schedule details encode the requested ID and retain rules, site, and clean
 test("schedule edits send all replacement rules, including an empty list, and accept empty success responses", async (context) => {
     const bodies: unknown[] = [];
     const fetch = context.mock.method(globalThis, "fetch", async (url: string, init: RequestInit) => {
+        if (url.endsWith("/csrf")) return Response.json({ token: "token" });
         assert.equal(url, `${config.apiBaseUrl}/api/schedules/edit`);
         assert.equal(init.method, "POST");
-        assert.deepEqual(init.headers, { "Content-Type": "application/json" });
+        assert.equal(new Headers(init.headers).get("Content-Type"), "application/json");
+        assert.equal(new Headers(init.headers).get("X-CSRF-TOKEN"), "token");
+        assert.equal(init.credentials, "include");
         bodies.push(JSON.parse(init.body as string));
         return new Response(null, { status: 204 });
     });
     await editSchedule(request);
     await editSchedule({ ...request, scheduleRule: [] });
     assert.deepEqual(bodies, [request, { ...request, scheduleRule: [] }]);
-    assert.equal(fetch.mock.callCount(), 2);
+    assert.equal(fetch.mock.callCount(), 4);
 });
 
-test("cleaner assignment sends tenant, schedule, and cleaner IDs as separate encoded parameters", async (context) => {
+test("cleaner assignment sends schedule and cleaner IDs as separate encoded parameters", async (context) => {
     const cleanerId = "cleaner + & /?#";
     const fetch = context.mock.method(globalThis, "fetch", async (input: string, init: RequestInit) => {
+        if (input.endsWith("/csrf")) return Response.json({ token: "token" });
         const url = new URL(input);
         assert.equal(url.origin, new URL(config.apiBaseUrl).origin);
         assert.equal(url.pathname, "/api/schedules/assign/cleaner");
         assert.deepEqual(Object.fromEntries(url.searchParams), {
-            tenantId: config.testTenant, scheduleId: request.scheduleId, cleanerId,
+            scheduleId: request.scheduleId, cleanerId,
         });
         assert.equal(init.method, "POST");
         return new Response(null, { status: 204 });
     });
     await assignCleaner(request.scheduleId, cleanerId);
-    assert.equal(fetch.mock.callCount(), 1);
+    assert.equal(fetch.mock.callCount(), 2);
 });
 
 const operations = [
@@ -72,10 +76,10 @@ for (const operation of operations) {
             [Response.json({}, { status: 400 }), operation.fallback],
             [Response.json(null, { status: 400 }), operation.fallback],
         ] as const) {
-            fetch.mock.mockImplementation(async () => response);
+            fetch.mock.mockImplementation(async (url: string) => url.endsWith("/csrf") ? Response.json({ token: "token" }) : response);
             const before = fetch.mock.callCount();
             await assert.rejects(operation.run(), { message });
-            assert.equal(fetch.mock.callCount(), before + 1);
+            assert.equal(fetch.mock.callCount(), before + (operation.name === "schedule lookup" ? 1 : 2));
         }
     });
 

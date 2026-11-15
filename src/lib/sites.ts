@@ -1,4 +1,4 @@
-import { identity } from "./sessionIdentity.ts";
+import { apiFetch } from "./session.ts";
 import { config } from "../config/config.ts";
 
 export interface Site {
@@ -42,7 +42,6 @@ export interface SiteDetails {
 
 /** The fields accepted by PUT /api/sites/{siteId}. */
 export interface EditSiteRequest {
-    tenantId: string;
     siteId: string;
     name: string;
     addressLine1: string;
@@ -60,10 +59,10 @@ interface GetSitesResponse {
 
 /** Retrieves tenant sites, optionally restricted to the given user. */
 export async function getSites(userId?: string): Promise<Site[]> {
-    const query = new URLSearchParams({ tenantId: identity.tenantId });
+    const query = new URLSearchParams();
     if (userId !== undefined) query.set("userId", userId);
 
-    const response = await fetch(
+    const response = await apiFetch(
         `${config.apiBaseUrl}/api/sites?${query}`
     );
 
@@ -77,7 +76,7 @@ export async function getSites(userId?: string): Promise<Site[]> {
 
 /** Retrieves all available details and assignments for one site. */
 export async function getSite(siteId: string): Promise<SiteDetails> {
-    const response = await fetch(`${config.apiBaseUrl}/api/sites/${encodeURIComponent(siteId)}`);
+    const response = await apiFetch(`${config.apiBaseUrl}/api/sites/${encodeURIComponent(siteId)}`);
 
     if (!response.ok) {
         throw new Error("Failed to fetch site");
@@ -88,7 +87,7 @@ export async function getSite(siteId: string): Promise<SiteDetails> {
 
 /** Updates the editable location and contact fields for a site. */
 export async function editSite(siteId: string, request: EditSiteRequest): Promise<void> {
-    const response = await fetch(`${config.apiBaseUrl}/api/sites/${encodeURIComponent(siteId)}`, {
+    const response = await apiFetch(`${config.apiBaseUrl}/api/sites/${encodeURIComponent(siteId)}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(request),

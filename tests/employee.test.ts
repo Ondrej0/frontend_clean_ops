@@ -11,16 +11,16 @@ const cleaner: Cleaner = {
     assignedSites: [{ id: "site", name: "Office", addressLine1: "1 High Street", postcode: "SW1A 1AA" }],
 };
 const request: EditEmployeeRequest = {
-    tenantId: config.testTenant, firstName: "Janet", lastName: "Doe", email: "janet@example.com",
+    firstName: "Janet", lastName: "Doe", email: "janet@example.com",
     phone: null, role: "MANAGER", payRate: 25.5, address: "",
 };
 
-test("employee lists request the configured tenant and preserve contact details", async (context) => {
+test("employee lists use the session tenant and preserve contact details", async (context) => {
     context.mock.method(globalThis, "fetch", async (input: string) => {
         const url = new URL(input);
         assert.equal(url.origin, new URL(config.apiBaseUrl).origin);
         assert.equal(url.pathname, "/api/cleaner");
-        assert.deepEqual([...url.searchParams], [["tenantId", config.testTenant]]);
+        assert.deepEqual([...url.searchParams], []);
         return Response.json({ cleaners: [cleaner] });
     });
     assert.deepEqual(await getCleaners(), [cleaner]);

@@ -1,4 +1,4 @@
-import { identity } from "./sessionIdentity.ts";
+import { apiFetch } from "./session.ts";
 import { config } from "../config/config.ts";
 
 export type ShiftStatus = "SCHEDULED" | "IN_PROGRESS" | "COMPLETED" | "CANCELLED" | "NO_SHOW";
@@ -33,17 +33,17 @@ export interface ShiftDateRange {
 }
 
 export async function getShifts(signal?: AbortSignal, range?: ShiftDateRange): Promise<ShiftsResponse> {
-    const query = new URLSearchParams({ tenantId: identity.tenantId, userId: identity.userId });
+    const query = new URLSearchParams();
     if (range) {
         query.set("fromDate", range.fromDate);
         query.set("toDate", range.toDate);
     }
-    const response = await fetch(`${config.apiBaseUrl}/api/shifts?${query}`, { signal, cache: "no-store" });
+    const response = await apiFetch(`${config.apiBaseUrl}/api/shifts?${query}`, { signal, cache: "no-store" });
     if (!response.ok) {
         const fallback = response.status === 404
-            ? "No cleaner was found for the configured user and tenant."
+            ? "The requested employee could not be found."
             : response.status === 400
-                ? "The configured user or tenant ID is invalid."
+                ? "The shift request is invalid. Check the selected dates."
                 : "We couldn't load your shifts. Please try again.";
         throw new Error(fallback);
     }

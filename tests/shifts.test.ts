@@ -72,14 +72,14 @@ test("refreshes just after each supplied boundary, then UK midnight", () => {
     assert.equal(nextShiftRefresh(data, Date.parse("2026-11-07T18:00:01Z")), Date.parse("2026-11-08T00:00:01Z"));
 });
 
-test("API uses configured IDs, supports cancellation and accepts empty results", async (context) => {
+test("API uses the session identity, supports cancellation and accepts empty results", async (context) => {
     const signal = new AbortController().signal;
     context.mock.method(globalThis, "fetch", async (input: string, init: RequestInit) => {
         const url = new URL(input);
         assert.equal(url.origin, new URL(config.apiBaseUrl).origin);
         assert.equal(url.pathname, "/api/shifts");
-        assert.equal(url.searchParams.get("tenantId"), config.testTenant);
-        assert.equal(url.searchParams.get("userId"), config.testUser);
+        assert.equal(url.searchParams.get("tenantId"), null);
+        assert.equal(url.searchParams.get("userId"), null);
         assert.equal(url.searchParams.has("fromDate"), false);
         assert.equal(url.searchParams.has("toDate"), false);
         assert.equal(init.signal, signal);
@@ -101,7 +101,7 @@ test("calendar requests supply explicit inclusive dates without changing the def
 });
 
 test("400, 404 and server failures are errors, never empty results", async (context) => {
-    for (const [status, message] of [[400, /invalid/], [404, /No cleaner/], [500, /couldn't load/]] as const) {
+    for (const [status, message] of [[400, /invalid/], [404, /employee could not be found/], [500, /couldn't load/]] as const) {
         const mock = context.mock.method(globalThis, "fetch", async () => new Response(null, { status }));
         await assert.rejects(getShifts(), message);
         mock.mock.restore();

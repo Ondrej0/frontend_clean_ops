@@ -1,4 +1,4 @@
-import { identity } from "@/lib/sessionIdentity";
+import { apiFetch } from "@/lib/session";
 import { useEffect, useState } from "react";
 import { WeeklyCalendar } from "@/components/layout/WeeklyCalendar";
 import timeGridPlugin from "@fullcalendar/timegrid";
@@ -21,7 +21,6 @@ interface ScheduleRuleRequest {
 }
 
 interface CreateScheduleRequest {
-    tenantId: string;
     siteId: string;
     name: string;
     scheduleRule: ScheduleRuleRequest[];
@@ -78,7 +77,6 @@ export function CreateSchedule() {
         }
 
         const request: CreateScheduleRequest = {
-            tenantId: identity.tenantId,
             siteId: selectedSiteId,
             name: name,
             scheduleRule: scheduleRules,
@@ -91,7 +89,7 @@ export function CreateSchedule() {
 
     async function createSchedule(request: CreateScheduleRequest) {
         try {
-            const response = await fetch(
+            const response = await apiFetch(
                 `${config.apiBaseUrl}/api/schedules`,
                 {
                     method: "POST",

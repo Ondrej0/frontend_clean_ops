@@ -37,7 +37,6 @@ export async function saveCleanerProfile(fields: CleanerProfileFields): Promise<
     // and explicitly whitelist form values rather than spreading a form object.
     const current = await getCleaner(identity.userId);
     const request = {
-        tenantId: identity.tenantId,
         firstName: fields.firstName.trim(),
         lastName: fields.lastName.trim(),
         email: fields.email.trim(),

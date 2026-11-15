@@ -1,6 +1,6 @@
 # Employee schedule overlap flags
 
-The entire app now requires an employee session before mounting navigation or pages. Managers land on their dashboard; cleaners land on My Work. URLs for the other role redirect to the signed-in user's home. A global Sign out button clears the session and returns to sign-in. Sign in with an existing account's email and password. Login uses the company configured by `config.testTenant`; reporting and flag reads derive the actual employee and tenant from the server session, never from that configuration or a submitted employee ID.
+The entire app now requires an employee session before mounting navigation or pages. Managers land on their dashboard; cleaners land on My Work. URLs for the other role redirect to the signed-in user's home. A global Sign out button clears the session and returns to sign-in. Sign in with an existing account's email and password. Login uses the company configured by `config.testTenant`; all resource APIs derive the actual employee and tenant from the server session, never from that configuration or a submitted employee ID.
 
 ## Database and reporting behavior
 
@@ -22,7 +22,7 @@ Session endpoints support BCrypt-backed sign-in, sign-out, and CSRF tokens. Flyw
 
 Employee creation and editing now require a session and CSRF protection to prevent privilege escalation through the old employee API. Managers can create/edit employees in their tenant. Cleaners can edit only their own personal fields and cannot change role or pay. The frontend employee write helpers send the session and CSRF token.
 
-This is a focused authentication addition: all frontend pages use session identity, while legacy scheduling/site/attendance APIs retain their existing server-side authorization behavior. It is not a complete authentication migration of the rest of CleanOps. Use the same hostname for frontend/backend locally (`localhost`); CORS permits credentialed requests from `http://localhost:5173`. Production deployment must configure its origin, HTTPS and secure session cookies.
+One Spring Security filter chain protects the entire API. Only login and CSRF-token acquisition are public; writes require CSRF protection. `ResourceAccess` checks the active account, company membership, role and assignment before resource controllers call their services. Cleaners read their own shifts, assigned schedules/sites and their own profile; managers operate within their company. Attendance derives the cleaner identity from the session and validates shift ownership. Tenant creation is denied until a separate onboarding/admin policy is implemented. Optional legacy tenant/user inputs are checked against the session and cannot override it. The frontend shared `apiFetch` helper attaches cookies and obtains CSRF tokens for every write, and a 401 clears the displayed identity and returns the app to its session check. Use the same hostname for frontend/backend locally (`localhost`); CORS permits credentialed requests from `http://localhost:5173`. Production deployment must configure its origin, HTTPS and secure session cookies.
 
 ## API
 
@@ -32,8 +32,8 @@ This is a focused authentication addition: all frontend pages use session identi
 | `POST /api/session/login` | Form body: `username=<tenant UUID>:<email>`, `password=<password>`; returns 204 or 401. |
 | `GET /api/session/me` | Current active employee identity and role. |
 | `POST /api/session/logout` | Invalidate the session. |
-| `GET /api/me/shifts?fromDate=YYYY-MM-DD&toDate=YYYY-MM-DD` | Cleaner: own calendar shifts. |
-| `GET /api/me/schedules` | Cleaner: own assigned recurring schedules. |
+| `GET /api/shifts?fromDate=YYYY-MM-DD&toDate=YYYY-MM-DD` | Cleaner: own shifts. Manager: supply a same-company `userId` filter. |
+| `GET /api/schedules/by-site` | Cleaner: own assigned schedules. Manager: company schedules, optionally filtered by `userId`. |
 | `POST /api/employee-flags/schedule-overlaps` | Cleaner: JSON `{ "fromDate": "YYYY-MM-DD", "toDate": "YYYY-MM-DD" }`, maximum 31 inclusive days. Returns `detected`, `created`, `alreadyReported` counts. Identity override fields are rejected. |
 | `GET /api/employee-flags?status=OPEN&employeeId=<UUID>` | Manager: tenant flags; both filters optional. Open flags sort first, then newest reports. Foreign-tenant employee filters return 404. |
 | `GET /api/employee-flags/mine?status=OPEN` | Cleaner: own flags; status optional. |
@@ -49,7 +49,7 @@ This is a focused authentication addition: all frontend pages use session identi
 
 Frontend tests cover request identity restrictions, session/CSRF transport, reporting messages, filtering, resolution, and errors. Existing calendar tests cover real dates, touching intervals, overnight boundaries, cancelled shifts and London DST.
 
-Backend integration tests cover successful/no-overlap/multiple-conflict reports, repeated and concurrent reporting, identity overrides, tenant isolation, role enforcement, resolution/re-reporting, regeneration/deletion history, session login/logout with real CSRF tokens, and employee-write privilege guards. Migration tests execute Flyway V1–V4 and verify uniqueness, resolution constraints and password migration.
+Backend integration tests cover successful/no-overlap/multiple-conflict reports, repeated and concurrent reporting, identity overrides, tenant isolation, role enforcement, resolution/re-reporting, regeneration/deletion history, session login/logout with real CSRF tokens, employee-write privilege guards, anonymous resource access, cross-company IDs, assignment restrictions, and CSRF enforcement on resource writes. Migration tests execute Flyway V1–V4 and verify uniqueness, resolution constraints and password migration.
 
 The repository's pre-existing `AttendanceServiceTest` does not compile because it still uses a removed `AttendanceRequest.clockedIn` field. From the backend directory, run `gradlew.bat test -I gradle/employee-flags-tests.gradle` to run the feature/scheduling/account tests independently until that unrelated test is repaired. The normal test task is unchanged. Existing shared UI lint errors also remain outside this feature.
 

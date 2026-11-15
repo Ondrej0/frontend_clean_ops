@@ -27,7 +27,7 @@ test("cleaner schedule requests include userId while manager requests remain ten
     assert.deepEqual(await getSchedulesBySites(config.testUser), data);
     for (const url of requests) {
         assert.equal(url.pathname, "/api/schedules/by-site");
-        assert.equal(url.searchParams.get("tenantId"), config.testTenant);
+        assert.equal(url.searchParams.get("tenantId"), null);
     }
     assert.equal(requests[0].searchParams.has("userId"), false);
     assert.equal(requests[1].searchParams.get("userId"), config.testUser);

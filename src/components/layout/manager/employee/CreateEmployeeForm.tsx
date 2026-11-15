@@ -1,11 +1,9 @@
-import { identity } from "@/lib/sessionIdentity";
 import { useState } from "react";
 import type { ChangeEvent, SubmitEvent } from "react";
 import { sessionRequest } from "@/lib/session";
 import { PageBackLink } from "@/components/layout/PageBackLink";
 
 interface Employee {
-    tenantId: string | null;
     firstName: string;
     lastName: string;
     passwordHash: string;
@@ -15,8 +13,6 @@ interface Employee {
 
 export function CreateEmployeeForm() {
     const [employee, setEmployee] = useState<Employee>({
-        // TODO: Replace with the authenticated manager's tenant ID
-        tenantId: identity.tenantId,
         firstName: "",
         lastName: "",
         passwordHash: "",
@@ -79,7 +75,6 @@ export function CreateEmployeeForm() {
 
             // Reset the form after successful creation
             setEmployee({
-                tenantId: employee.tenantId,
                 firstName: "",
                 lastName: "",
                 passwordHash: "",

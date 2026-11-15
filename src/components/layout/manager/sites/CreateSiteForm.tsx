@@ -1,11 +1,10 @@
-import { identity } from "@/lib/sessionIdentity";
+import { apiFetch } from "@/lib/session";
 import { useState } from "react";
 import type { ChangeEvent, SubmitEvent } from "react";
 import {config} from "@/config/config.ts";
 import { PageBackLink } from "@/components/layout/PageBackLink";
 
 interface Site {
-    tenantId: string | null;
     name: string;
     addressLine1: string;
     city: string;
@@ -14,7 +13,6 @@ interface Site {
 
 export function CreateSiteForm() {
     const [site, setSite] = useState<Site>({
-        tenantId: identity.tenantId,
         name: "",
         addressLine1: "",
         city: "",
@@ -46,7 +44,7 @@ export function CreateSiteForm() {
 
         try {
             // TODO: Move the base URL into a config/environment variable.
-            const response = await fetch(`${config.apiBaseUrl}/api/sites`, {
+            const response = await apiFetch(`${config.apiBaseUrl}/api/sites`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -74,7 +72,6 @@ export function CreateSiteForm() {
             setSuccess(true);
 
             setSite({
-                tenantId: site.tenantId,
                 name: "",
                 addressLine1: "",
                 city: "",

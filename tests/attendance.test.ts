@@ -24,8 +24,11 @@ test("QR payload must be a plain UUID, allowing whitespace and uppercase", () =>
 test("both attendance endpoints send the scanned site ID, even when different from the shift's site", async (context) => {
     const requests: { url: string; body: unknown }[] = [];
     context.mock.method(globalThis, "fetch", async (url: string, init: RequestInit) => {
+        if (url.endsWith("/csrf")) return Response.json({ token: "token" });
         assert.equal(init.method, "POST");
-        assert.deepEqual(init.headers, { "Content-Type": "application/json" });
+        assert.equal(new Headers(init.headers).get("Content-Type"), "application/json");
+        assert.equal(new Headers(init.headers).get("X-CSRF-TOKEN"), "token");
+        assert.equal(init.credentials, "include");
         requests.push({ url, body: JSON.parse(init.body as string) });
         // The API response schema is not needed to refresh the shifts, including an empty 202.
         return new Response(null, { status: 202 });
@@ -34,7 +37,7 @@ test("both attendance endpoints send the scanned site ID, even when different fr
     await recordAttendance("clockOut", { ...shift, status: "IN_PROGRESS", canClockIn: false, canClockOut: true }, scannedId);
     assert.deepEqual(requests, ["clockIn", "clockOut"].map((action) => ({
         url: `${config.apiBaseUrl}/api/attendance/${action}`,
-        body: { tenantId: config.testTenant, siteId: scannedId, shiftId: shift.id, userId: config.testUser },
+        body: { siteId: scannedId, shiftId: shift.id },
     })));
 });
 
@@ -54,23 +57,24 @@ test("invalid scans and unavailable actions cannot submit requests", async (cont
 
 test("HTTP rejection is surfaced without retrying the attendance mutation", async (context) => {
     for (const [status, message] of [[400, /not accepted/], [403, /not accepted/], [422, /not accepted/], [401, /session has expired/], [409, /already recorded/], [500, /Check your shifts before scanning again/]] as const) {
-        const fetch = context.mock.method(globalThis, "fetch", async () => new Response(null, { status }));
+        const fetch = context.mock.method(globalThis, "fetch", async (url: string) => url.endsWith("/csrf") ? Response.json({ token: "token" }) : new Response(null, { status }));
         await assert.rejects(recordAttendance("clockIn", shift, scannedId), message);
-        assert.equal(fetch.mock.callCount(), 1);
+        assert.equal(fetch.mock.callCount(), 2);
         fetch.mock.restore();
     }
 });
 
 test("connection loss asks the cleaner to check status before a new scan", async (context) => {
-    const fetch = context.mock.method(globalThis, "fetch", async () => { throw new TypeError("Failed to fetch"); });
+    const fetch = context.mock.method(globalThis, "fetch", async (url: string) => { if (url.endsWith("/csrf")) return Response.json({ token: "token" }); throw new TypeError("Failed to fetch"); });
     await assert.rejects(recordAttendance("clockIn", shift, scannedId), /Check your shifts before scanning again/);
-    assert.equal(fetch.mock.callCount(), 1);
+    assert.equal(fetch.mock.callCount(), 2);
 });
 
 test("a stalled attendance request aborts after 20 seconds without automatically submitting again", async (context) => {
     context.mock.timers.enable({ apis: ["setTimeout"] });
     let signal: AbortSignal | undefined;
     const fetch = context.mock.method(globalThis, "fetch", (_url: string, init: RequestInit) => {
+        if (_url.endsWith("/csrf")) return Promise.resolve(Response.json({ token: "token" }));
         signal = init.signal!;
         return new Promise<Response>((_resolve, reject) => {
             signal!.addEventListener("abort", () => reject(new DOMException("Aborted", "AbortError")), { once: true });
@@ -78,19 +82,22 @@ test("a stalled attendance request aborts after 20 seconds without automatically
     });
     const pending = recordAttendance("clockIn", shift, scannedId);
     const rejection = assert.rejects(pending, /Check your shifts before scanning again/);
+    // Allow the CSRF response and mutation to start before advancing the clock.
+    await new Promise<void>((resolve) => setImmediate(resolve));
     assert.ok(signal);
     context.mock.timers.tick(19_999);
     assert.equal(signal.aborted, false);
     context.mock.timers.tick(1);
     await rejection;
     assert.equal(signal.aborted, true);
-    assert.equal(fetch.mock.callCount(), 1);
+    assert.equal(fetch.mock.callCount(), 2);
 });
 
 test("completed attendance requests clear their abort timer on success and failure", async (context) => {
     context.mock.timers.enable({ apis: ["setTimeout"] });
     const signals: AbortSignal[] = [];
     context.mock.method(globalThis, "fetch", async (_url: string, init: RequestInit) => {
+        if (_url.endsWith("/csrf")) return Response.json({ token: "token" });
         signals.push(init.signal!);
         if (signals.length === 2) throw new TypeError("Failed to fetch");
         return new Response(null, { status: 204 });

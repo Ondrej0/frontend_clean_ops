@@ -1,4 +1,4 @@
-import { identity } from "./sessionIdentity.ts";
+import { apiFetch } from "./session.ts";
 import { config } from "../config/config.ts";
 
 export interface ScheduleRule {
@@ -40,7 +40,6 @@ export interface ScheduleRuleRequest {
 }
 
 export interface EditScheduleRequest {
-    tenantId: string;
     scheduleId: string;
     name: string;
     scheduleRule: ScheduleRuleRequest[];
@@ -57,9 +56,9 @@ export interface SchedulesBySite {
 
 /** Retrieves active schedules, optionally restricted to the given user. */
 export async function getSchedulesBySites(userId?: string): Promise<SchedulesBySite[]> {
-    const query = new URLSearchParams({ tenantId: identity.tenantId });
+    const query = new URLSearchParams();
     if (userId !== undefined) query.set("userId", userId);
-    const response = await fetch(
+    const response = await apiFetch(
         `${config.apiBaseUrl}/api/schedules/by-site?${query.toString()}`
     );
 
@@ -87,7 +86,7 @@ async function getErrorMessage(response: Response, fallback: string) {
 
 export async function getSchedule(scheduleId: string): Promise<ScheduleDetails> {
     const query = new URLSearchParams({ scheduleId });
-    const response = await fetch(`${config.apiBaseUrl}/api/schedules?${query.toString()}`);
+    const response = await apiFetch(`${config.apiBaseUrl}/api/schedules?${query.toString()}`);
 
     if (!response.ok) {
         throw new Error(await getErrorMessage(response, "Failed to fetch schedule"));
@@ -97,7 +96,7 @@ export async function getSchedule(scheduleId: string): Promise<ScheduleDetails> 
 }
 
 export async function editSchedule(request: EditScheduleRequest): Promise<void> {
-    const response = await fetch(`${config.apiBaseUrl}/api/schedules/edit`, {
+    const response = await apiFetch(`${config.apiBaseUrl}/api/schedules/edit`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(request),
@@ -110,11 +109,10 @@ export async function editSchedule(request: EditScheduleRequest): Promise<void> 
 
 export async function assignCleaner(scheduleId: string, cleanerId: string): Promise<void> {
     const query = new URLSearchParams({
-        tenantId: identity.tenantId,
         scheduleId,
         cleanerId,
     });
-    const response = await fetch(
+    const response = await apiFetch(
         `${config.apiBaseUrl}/api/schedules/assign/cleaner?${query.toString()}`,
         { method: "POST" }
     );

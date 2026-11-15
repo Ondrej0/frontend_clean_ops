@@ -1,14 +1,12 @@
-import { identity } from "./sessionIdentity.ts";
+import { apiFetch } from "./session.ts";
 import { config } from "../config/config.ts";
 import type { Shift } from "./shifts.ts";
 
 export type AttendanceAction = "clockIn" | "clockOut";
 
 export interface AttendanceRequest {
-    tenantId: string;
     siteId: string;
     shiftId: string;
-    userId: string;
 }
 
 export function scannedSiteId(value: string): string | null {
@@ -27,17 +25,15 @@ export async function recordAttendance(action: AttendanceAction, shift: Shift, q
     if (!canRecordAttendance(shift, action)) throw new Error("This action is no longer available. Check your shifts for the latest status.");
 
     const body: AttendanceRequest = {
-        tenantId: identity.tenantId,
         // This must always be the scanned UUID, never shift.site.id.
         siteId,
         shiftId: shift.id,
-        userId: identity.userId,
     };
     let response: Response;
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 20_000);
     try {
-        response = await fetch(`${config.apiBaseUrl}/api/attendance/${action}`, {
+        response = await apiFetch(`${config.apiBaseUrl}/api/attendance/${action}`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(body),

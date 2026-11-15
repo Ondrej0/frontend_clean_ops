@@ -1,4 +1,3 @@
-import { identity } from "@/lib/sessionIdentity";
 import { useEffect, useState } from "react";
 import type { ChangeEvent } from "react";
 import { Building2, CalendarDays, CheckCircle2, Clock3, LoaderCircle, Mail, MapPin, Pencil, Phone, PoundSterling, Save, User, XCircle } from "lucide-react";
@@ -23,7 +22,7 @@ function formatHourlyRate(hourlyRate: number | null) {
     }).format(hourlyRate) + " / hour";
 }
 
-type EditableSiteFields = Omit<EditSiteRequest, "tenantId" | "siteId">;
+type EditableSiteFields = Omit<EditSiteRequest, "siteId">;
 
 function getEditableFields(site: SiteDetailsData): EditableSiteFields {
     return {
@@ -130,7 +129,7 @@ export function SiteDetails() {
         setSaving(true);
         setSaveError("");
         try {
-            await editSite(siteId, { tenantId: identity.tenantId, siteId, ...editableFields, name: editableFields.name.trim() });
+            await editSite(siteId, { siteId, ...editableFields, name: editableFields.name.trim() });
             await loadSite();
             setIsEditing(false);
         } catch (saveFailure) {

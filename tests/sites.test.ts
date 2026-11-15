@@ -16,7 +16,7 @@ test("manager requests stay tenant-wide and cleaner requests include the optiona
     for (const url of requests) {
         assert.equal(url.origin, new URL(config.apiBaseUrl).origin);
         assert.equal(url.pathname, "/api/sites");
-        assert.equal(url.searchParams.get("tenantId"), config.testTenant);
+        assert.equal(url.searchParams.get("tenantId"), null);
     }
     assert.equal(requests[0].searchParams.has("userId"), false);
     assert.equal(requests[1].searchParams.get("userId"), config.testUser);
@@ -41,7 +41,7 @@ const details: SiteDetails = {
     assignedCleaners: [{ cleanerId: "cleaner", firstName: "Jane", lastName: "Doe" }],
 };
 const edit: EditSiteRequest = {
-    tenantId: config.testTenant, siteId: details.siteId, name: "New office", addressLine1: "2 High Street",
+    siteId: details.siteId, name: "New office", addressLine1: "2 High Street",
     city: "London", postcode: "SW1A 1AA", contactName: "", contactPhone: "", contactEmail: "", hourlyRate: null,
 };
 
@@ -61,9 +61,12 @@ test("missing site details remain an error", async (context) => {
 test("site edits send location changes, cleared contacts, and nullable or zero rates", async (context) => {
     const bodies: unknown[] = [];
     context.mock.method(globalThis, "fetch", async (url: string, init: RequestInit) => {
+        if (url.endsWith("/csrf")) return Response.json({ token: "token" });
         assert.equal(url, `${config.apiBaseUrl}/api/sites/site%20%2F%3F%23`);
         assert.equal(init.method, "PUT");
-        assert.deepEqual(init.headers, { "Content-Type": "application/json" });
+        assert.equal(new Headers(init.headers).get("Content-Type"), "application/json");
+        assert.equal(new Headers(init.headers).get("X-CSRF-TOKEN"), "token");
+        assert.equal(init.credentials, "include");
         bodies.push(JSON.parse(init.body as string));
         return new Response(null, { status: 204 });
     });
@@ -80,10 +83,10 @@ test("site save errors preserve server messages and fall back for unusable respo
         ["null", "Failed to save site changes."],
         ['{"message":{"name":"Invalid"}}', "Failed to save site changes."],
     ]) {
-        fetch.mock.mockImplementation(async () => new Response(body, { status: 400 }));
+        fetch.mock.mockImplementation(async (url: string) => url.endsWith("/csrf") ? Response.json({ token: "token" }) : new Response(body, { status: 400 }));
         const before = fetch.mock.callCount();
         await assert.rejects(editSite(details.siteId, edit), { message });
-        assert.equal(fetch.mock.callCount(), before + 1);
+        assert.equal(fetch.mock.callCount(), before + 2);
     }
 });
 

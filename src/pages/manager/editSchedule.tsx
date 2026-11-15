@@ -1,4 +1,3 @@
-import { identity } from "@/lib/sessionIdentity";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { WeeklyCalendar } from "@/components/layout/WeeklyCalendar";
@@ -74,7 +73,6 @@ export function EditSchedule() {
         setSuccess("");
         try {
             await editSchedule({
-                tenantId: identity.tenantId,
                 scheduleId,
                 name: name.trim(),
                 scheduleRule: eventsToRules(events),

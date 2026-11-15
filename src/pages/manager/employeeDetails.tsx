@@ -1,4 +1,3 @@
-import { identity } from "@/lib/sessionIdentity";
 import { useEffect, useState } from "react";
 import type { ChangeEvent } from "react";
 import { Building2, CalendarDays, CheckCircle2, Clock3, LoaderCircle, Mail, MapPin, Pencil, Phone, PoundSterling, Save, User, XCircle } from "lucide-react";
@@ -22,7 +21,7 @@ function formatPayRate(payRate: number | null) {
     }).format(payRate) + " / hour";
 }
 
-type EditableEmployeeFields = Omit<EditEmployeeRequest, "tenantId">;
+type EditableEmployeeFields = EditEmployeeRequest;
 
 function getEditableFields(cleaner: Cleaner): EditableEmployeeFields {
     return {
@@ -142,7 +141,6 @@ export function EmployeeDetails() {
         setSaveError("");
         try {
             await editEmployee(cleanerId, {
-                tenantId: identity.tenantId,
                 ...editableFields,
                 firstName: editableFields.firstName.trim(),
                 lastName: editableFields.lastName.trim(),

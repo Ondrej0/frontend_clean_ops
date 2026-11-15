@@ -1,6 +1,5 @@
 import { sessionRequest } from "./session.ts";
-import type { ShiftDateRange, ShiftsResponse } from "./shifts.ts";
-import type { SchedulesBySite } from "./schedules.ts";
+import type { ShiftDateRange } from "./shifts.ts";
 
 export type EmployeeFlagStatus = "OPEN" | "RESOLVED";
 export interface EmployeeFlag {
@@ -43,14 +42,4 @@ export async function getEmployeeFlags(status?: EmployeeFlagStatus, employeeId?:
 export async function resolveEmployeeFlag(id: string): Promise<EmployeeFlag> {
     const response = await sessionRequest(`/api/employee-flags/${encodeURIComponent(id)}/resolve`, { method: "POST" });
     return response.json() as Promise<EmployeeFlag>;
-}
-
-export async function getMyCalendarShifts(range: ShiftDateRange, signal?: AbortSignal): Promise<ShiftsResponse> {
-    const query = new URLSearchParams({ fromDate: range.fromDate, toDate: range.toDate });
-    const response = await sessionRequest(`/api/me/shifts?${query}`, { signal });
-    return response.json() as Promise<ShiftsResponse>;
-}
-
-export async function getMySchedules(signal?: AbortSignal): Promise<SchedulesBySite[]> {
-    return (await sessionRequest("/api/me/schedules", { signal })).json() as Promise<SchedulesBySite[]>;
 }

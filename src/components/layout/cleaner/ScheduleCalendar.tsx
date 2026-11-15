@@ -1,7 +1,8 @@
+import { getShifts } from "@/lib/shifts";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Flag, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { getMyCalendarShifts, overlapReportMessage, reportScheduleOverlaps } from "@/lib/employeeFlags";
+import { overlapReportMessage, reportScheduleOverlaps } from "@/lib/employeeFlags";
 import { WeeklyCalendar } from "@/components/layout/WeeklyCalendar";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import type { ShiftsResponse } from "@/lib/shifts";
@@ -28,7 +29,7 @@ export function ScheduleCalendar() {
             setError("");
             setData(null);
             try {
-                const result = await getMyCalendarShifts(range, request.signal);
+                const result = await getShifts(request.signal, range);
                 if (active && !request.signal.aborted) setData(result);
             } catch (cause) {
                 if (active && !request.signal.aborted) setError(cause instanceof Error ? cause.message : "We couldn't load your shifts. Please try again.");

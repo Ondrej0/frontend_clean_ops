@@ -3,7 +3,7 @@ import { CalendarDays, RefreshCw } from "lucide-react";
 import { ScheduleSiteCard } from "@/components/layout/manager/schedules/ScheduleSiteCard";
 import { ScheduleCalendar } from "@/components/layout/cleaner/ScheduleCalendar";
 import type { SchedulesBySite } from "@/lib/schedules";
-import { getMySchedules } from "@/lib/employeeFlags";
+import { getSchedulesBySites } from "@/lib/schedules";
 
 export function MySchedule() {
     const [sites, setSites] = useState<SchedulesBySite[]>([]);
@@ -13,7 +13,7 @@ export function MySchedule() {
 
     useEffect(() => {
         let active = true;
-        getMySchedules()
+        getSchedulesBySites()
             .then((data) => active && setSites(data))
             .catch(() => active && setError("We couldn't load your schedules. Please try again."))
             .finally(() => active && setLoading(false));
