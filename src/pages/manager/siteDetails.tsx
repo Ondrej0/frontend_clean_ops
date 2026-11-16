@@ -6,6 +6,7 @@ import { SiteQrCodeButton } from "@/components/layout/manager/sites/SiteQrCodeBu
 import { PageBackLink } from "@/components/layout/PageBackLink";
 import { editSite, getSite, type EditSiteRequest, type SiteDetails as SiteDetailsData } from "@/lib/sites";
 import { createSchedulePathForSite } from "@/lib/scheduleNavigation";
+import { ManagerShiftsSection } from "@/components/layout/manager/shifts/ManagerShiftsSection";
 
 function formatDate(value: string) {
     const date = new Date(value);
@@ -173,6 +174,8 @@ export function SiteDetails() {
                     <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm lg:col-span-2"><div className="flex items-center justify-between gap-3"><div className="flex items-center gap-2"><CalendarDays className="size-5 text-blue-600" /><h2 className="font-semibold text-slate-900">Schedules</h2></div><div className="flex items-center gap-3"><Link to={createSchedulePathForSite(site.siteId)} className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm shadow-blue-600/25 transition hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-100"><Plus className="size-4" aria-hidden="true" />Add schedule</Link><span className="rounded-full bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-700">{assignedSchedules.length}</span></div></div>{assignedSchedules.length === 0 ? <p className="mt-5 text-sm text-slate-500">No schedules assigned yet.</p> : <ul className="mt-4 space-y-2">{assignedSchedules.map((schedule) => <li key={schedule.scheduleId}><Link to={`/manager/schedules/${schedule.scheduleId}/edit`} className="flex items-center justify-between gap-4 rounded-xl bg-slate-50 px-4 py-3 transition hover:bg-blue-50 focus:outline-none focus:ring-4 focus:ring-blue-100"><span className="font-medium text-slate-800">{schedule.name || "Unnamed schedule"}</span><span className="text-sm font-semibold text-blue-700">Edit schedule</span></Link></li>)}</ul>}</section>
 
                     <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"><div className="flex items-center justify-between gap-3"><div className="flex items-center gap-2"><User className="size-5 text-blue-600" /><h2 className="font-semibold text-slate-900">Assigned cleaners</h2></div><span className="rounded-full bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-700">{assignedCleaners.length}</span></div>{assignedCleaners.length === 0 ? <p className="mt-5 text-sm text-slate-500">No cleaners assigned yet.</p> : <ul className="mt-4 space-y-2">{assignedCleaners.map((cleaner) => <li key={cleaner.cleanerId}><Link to={`/manager/employees/${cleaner.cleanerId}`} className="block rounded-xl bg-slate-50 px-4 py-3 transition hover:bg-blue-50 focus:outline-none focus:ring-4 focus:ring-blue-100"><p className="font-medium text-slate-800">{[cleaner.firstName, cleaner.lastName].filter(Boolean).join(" ") || "Unnamed employee"}</p><p className="mt-1 text-sm font-semibold text-blue-700">View employee</p></Link></li>)}</ul>}</section>
+
+                    <ManagerShiftsSection filter={{ siteId: site.siteId }} context="site" />
                 </div>
             </div>
         </main>

@@ -8,6 +8,7 @@ const scannedId = "a3f87517-670f-456a-bd92-47abf697bdf0";
 const shift: Shift = {
     id: "a58e72c3-debe-45a3-af21-37d75f43e7d8",
     site: { id: "762ec617-2cc4-4d17-b946-008682257b36", name: "Office" },
+    employee: { id: "employee", firstName: "Alex", lastName: "Smith" },
     scheduledStart: "2026-11-09T09:00:00Z", scheduledEnd: "2026-11-09T12:00:00Z",
     actualStart: null, actualEnd: null, status: "SCHEDULED",
     clockInOpensAt: "2026-11-09T08:30:00Z", clockInDeadline: "2026-11-09T14:00:00Z",

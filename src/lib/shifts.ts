@@ -6,6 +6,7 @@ export type ShiftStatus = "SCHEDULED" | "IN_PROGRESS" | "COMPLETED" | "CANCELLED
 export interface Shift {
     id: string;
     site: { id: string; name: string };
+    employee: { id: string; firstName: string; lastName: string };
     scheduleName?: string | null;
     scheduledStart: string;
     scheduledEnd: string;
@@ -32,12 +33,18 @@ export interface ShiftDateRange {
     toDate: string;
 }
 
-export async function getShifts(signal?: AbortSignal, range?: ShiftDateRange): Promise<ShiftsResponse> {
+export type ShiftFilter =
+    | { userId: string; siteId?: never }
+    | { siteId: string; userId?: never };
+
+export async function getShifts(signal?: AbortSignal, range?: ShiftDateRange, filter?: ShiftFilter): Promise<ShiftsResponse> {
     const query = new URLSearchParams();
     if (range) {
         query.set("fromDate", range.fromDate);
         query.set("toDate", range.toDate);
     }
+    if (filter?.userId) query.set("userId", filter.userId);
+    if (filter?.siteId) query.set("siteId", filter.siteId);
     const response = await apiFetch(`${config.apiBaseUrl}/api/shifts?${query}`, { signal, cache: "no-store" });
     if (!response.ok) {
         const fallback = response.status === 404

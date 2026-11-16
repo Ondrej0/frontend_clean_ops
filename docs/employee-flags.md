@@ -32,7 +32,7 @@ One Spring Security filter chain protects the entire API. Only login and CSRF-to
 | `POST /api/session/login` | Form body: `username=<tenant UUID>:<email>`, `password=<password>`; returns 204 or 401. |
 | `GET /api/session/me` | Current active employee identity and role. |
 | `POST /api/session/logout` | Invalidate the session. |
-| `GET /api/shifts?fromDate=YYYY-MM-DD&toDate=YYYY-MM-DD` | Cleaner: own shifts. Manager: supply a same-company `userId` filter. |
+| `GET /api/shifts?fromDate=YYYY-MM-DD&toDate=YYYY-MM-DD` | Cleaner: own shifts. Manager: supply either a same-company `userId` or `siteId` filter. |
 | `GET /api/schedules/by-site` | Cleaner: own assigned schedules. Manager: company schedules, optionally filtered by `userId`. |
 | `POST /api/employee-flags/schedule-overlaps` | Cleaner: JSON `{ "fromDate": "YYYY-MM-DD", "toDate": "YYYY-MM-DD" }`, maximum 31 inclusive days. Returns `detected`, `created`, `alreadyReported` counts. Identity override fields are rejected. |
 | `GET /api/employee-flags?status=OPEN&employeeId=<UUID>` | Manager: tenant flags; both filters optional. Open flags sort first, then newest reports. Foreign-tenant employee filters return 404. |

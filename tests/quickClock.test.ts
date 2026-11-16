@@ -6,6 +6,7 @@ import type { Shift } from "../src/lib/shifts.ts";
 const now = Date.parse("2026-11-10T08:00:00Z");
 const shift: Shift = {
     id: "next", site: { id: "site", name: "Office" },
+    employee: { id: "employee", firstName: "Alex", lastName: "Smith" },
     scheduledStart: "2026-11-10T09:00:00Z", scheduledEnd: "2026-11-10T12:00:00Z",
     actualStart: null, actualEnd: null, status: "SCHEDULED",
     clockInOpensAt: "2026-11-10T08:30:00Z", clockInDeadline: "2026-11-10T10:00:00Z",

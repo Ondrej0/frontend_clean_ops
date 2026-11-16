@@ -1,10 +1,11 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { buildShiftEvents, calendarRange, calendarTime, calendarWeek } from "../src/lib/shiftCalendar.ts";
+import { buildShiftEvents, calendarRange, calendarTime, calendarWeek, moveCalendarWeek } from "../src/lib/shiftCalendar.ts";
 import type { Shift } from "../src/lib/shifts.ts";
 
 const shift: Shift = {
     id: "shift-1", site: { id: "site-1", name: "Office" }, scheduleName: "Morning clean",
+    employee: { id: "employee-1", firstName: "Alex", lastName: "Smith" },
     scheduledStart: "2026-07-06T09:00:00+01:00", scheduledEnd: "2026-07-06T12:00:00+01:00",
     actualStart: "2026-07-06T09:05:00+01:00", actualEnd: null, status: "IN_PROGRESS",
     clockInOpensAt: "2026-07-06T08:30:00+01:00", clockInDeadline: "2026-07-06T14:00:00+01:00",
@@ -67,4 +68,6 @@ test("initial week follows UK Monday and API ranges include Sunday but not the n
     assert.deepEqual(calendarWeek(Date.parse("2026-07-05T23:30:00Z")), { fromDate: "2026-07-06", toDate: "2026-07-12" });
     assert.deepEqual(calendarWeek(Date.parse("2026-11-15T23:30:00Z")), { fromDate: "2026-11-09", toDate: "2026-11-15" });
     assert.deepEqual(calendarRange(new Date("2026-12-28T00:00:00Z"), new Date("2027-01-04T00:00:00Z")), { fromDate: "2026-12-28", toDate: "2027-01-03" });
+    assert.deepEqual(moveCalendarWeek({ fromDate: "2026-03-23", toDate: "2026-03-29" }, 1), { fromDate: "2026-03-30", toDate: "2026-04-05" });
+    assert.deepEqual(moveCalendarWeek({ fromDate: "2026-10-26", toDate: "2026-11-01" }, -1), { fromDate: "2026-10-19", toDate: "2026-10-25" });
 });

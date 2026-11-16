@@ -26,7 +26,7 @@ The browser carries a session cookie. The backend uses that session to identify 
 
 | Resource | Cleaner | Manager |
 | --- | --- | --- |
-| Shifts | Own shifts, inferred from session | Selected employee in the manager's tenant |
+| Shifts | Own shifts, inferred from session | Selected employee or site in the manager's tenant |
 | Schedule/site lists | Assigned resources | Tenant resources, optionally filtered by employee |
 | Schedule/site details | Assigned resources | Resources in the manager's tenant |
 | Schedule/site creation, editing and assignment | Denied | Allowed within the tenant |
@@ -37,7 +37,7 @@ The browser carries a session cookie. The backend uses that session to identify 
 | View/resolve employee flags | Own flag history; no resolution | Tenant flags and resolution |
 | Create tenant | Denied | Denied pending a separate onboarding/admin policy |
 
-Shift and schedule reads use `/api/shifts` and `/api/schedules/by-site`. The duplicate `/api/me/shifts` and `/api/me/schedules` routes have been removed from `EmployeeSessionController`, which only provides session identity and CSRF tokens.
+Shift and schedule reads use `/api/shifts` and `/api/schedules/by-site`. Managers filter shifts by either `userId` or `siteId`; cleaners always receive only their own shifts. The duplicate `/api/me/shifts` and `/api/me/schedules` routes have been removed from `EmployeeSessionController`, which only provides session identity and CSRF tokens.
 
 The frontend no longer submits a tenant ID with business requests. Cleaner list requests also omit their own user ID. Manager filters still send an employee ID because it identifies the requested resource, not the signed-in actor. Legacy backend tenant/user fields remain optional for compatibility, but supplied values must satisfy the same ownership checks and cannot override the session.
 

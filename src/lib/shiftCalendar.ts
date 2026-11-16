@@ -18,6 +18,14 @@ export function calendarWeek(now: number): ShiftDateRange {
     return { fromDate: start.toISOString().slice(0, 10), toDate: end.toISOString().slice(0, 10) };
 }
 
+export function moveCalendarWeek(range: ShiftDateRange, weeks: number): ShiftDateRange {
+    const start = new Date(`${range.fromDate}T12:00:00Z`);
+    start.setUTCDate(start.getUTCDate() + weeks * 7);
+    const end = new Date(start);
+    end.setUTCDate(end.getUTCDate() + 6);
+    return { fromDate: start.toISOString().slice(0, 10), toDate: end.toISOString().slice(0, 10) };
+}
+
 /** FullCalendar's end is exclusive; the shifts API's toDate is inclusive. */
 export function calendarRange(start: Date, end: Date): ShiftDateRange {
     return { fromDate: start.toISOString().slice(0, 10), toDate: new Date(end.getTime() - 1).toISOString().slice(0, 10) };

@@ -5,6 +5,7 @@ import { clockingInformation, formatShiftTime, getShifts, groupShiftsByDay, lond
 
 const shift: Shift = {
     id: "shift", site: { id: "site", name: "Office" },
+    employee: { id: "employee", firstName: "Alex", lastName: "Smith" },
     scheduledStart: "2026-11-07T09:00:00+00:00", scheduledEnd: "2026-11-07T12:00:00+00:00",
     actualStart: null, actualEnd: null, status: "SCHEDULED",
     clockInOpensAt: "2026-11-07T08:30:00+00:00", clockInDeadline: "2026-11-07T14:00:00+00:00",
@@ -98,6 +99,20 @@ test("calendar requests supply explicit inclusive dates without changing the def
         return Response.json({ ...response, ...range });
     });
     assert.deepEqual(await getShifts(undefined, range), { ...response, ...range });
+});
+
+test("manager requests filter shifts by one encoded employee or site", async (context) => {
+    const filters = [{ userId: "employee /?#" }, { siteId: "site /?#" }] as const;
+    const requests: URL[] = [];
+    context.mock.method(globalThis, "fetch", async (input: string) => {
+        requests.push(new URL(input));
+        return Response.json(response);
+    });
+    for (const filter of filters) await getShifts(undefined, undefined, filter);
+    assert.equal(requests[0].searchParams.get("userId"), filters[0].userId);
+    assert.equal(requests[0].searchParams.has("siteId"), false);
+    assert.equal(requests[1].searchParams.get("siteId"), filters[1].siteId);
+    assert.equal(requests[1].searchParams.has("userId"), false);
 });
 
 test("400, 404 and server failures are errors, never empty results", async (context) => {
