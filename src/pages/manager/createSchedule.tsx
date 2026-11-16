@@ -6,6 +6,8 @@ import interactionPlugin from "@fullcalendar/interaction";
 import { config } from "@/config/config.ts";
 import { getSites, type Site } from "@/lib/sites";
 import { PageBackLink } from "@/components/layout/PageBackLink";
+import { useSearchParams } from "react-router-dom";
+import { getPreselectedSiteId } from "@/lib/scheduleNavigation";
 
 import type {
     DateSelectArg,
@@ -27,6 +29,8 @@ interface CreateScheduleRequest {
 }
 
 export function CreateSchedule() {
+    const [searchParams] = useSearchParams();
+    const preselectedSiteId = getPreselectedSiteId(searchParams);
     const [events, setEvents] = useState<EventInput[]>([]);
     const [sites, setSites] = useState<Site[]>([]);
     const [selectedSiteId, setSelectedSiteId] = useState<string>("");
@@ -36,8 +40,13 @@ export function CreateSchedule() {
     const [success, setSuccess] = useState<string>("");
 
     useEffect(() => {
-        getSites().then(setSites).catch(() => setError("Unable to load sites."));
-    }, []);
+        getSites()
+            .then((loadedSites) => {
+                setSites(loadedSites);
+                setSelectedSiteId(preselectedSiteId);
+            })
+            .catch(() => setError("Unable to load sites."));
+    }, [preselectedSiteId]);
 
     const handleSubmit = async (
         event: React.FormEvent<HTMLFormElement>
