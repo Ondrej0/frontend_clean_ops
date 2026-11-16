@@ -102,11 +102,11 @@ export function ScheduleCalendar() {
                 height={650}
                 events={events}
                 eventContent={({ event, timeText }) => (
-                    <div className="overflow-hidden text-xs leading-snug">
-                        <div className="font-semibold break-words">{event.extendedProps.siteName}</div>
-                        <div className="break-words">{event.extendedProps.scheduleName}</div>
-                        <div className="mt-1 text-[11px] font-medium tabular-nums">{timeText}</div>
-                        <div className="mt-1 text-[10px] font-semibold uppercase tracking-wide">{event.extendedProps.cancelled ? "Cancelled" : event.extendedProps.overlaps ? "Overlap" : "No overlap"}</div>
+                    <div className="h-full min-w-0 overflow-hidden text-xs leading-snug">
+                        <div className="truncate font-semibold">{event.extendedProps.siteName}</div>
+                        <div className="truncate">{event.extendedProps.scheduleName}</div>
+                        <div className="mt-1 truncate text-[11px] font-medium tabular-nums">{timeText}</div>
+                        <div className="mt-1 truncate text-[10px] font-semibold uppercase tracking-wide">{event.extendedProps.cancelled ? "Cancelled" : event.extendedProps.overlaps ? "Overlap" : "No overlap"}</div>
                     </div>
                 )}
                 eventDidMount={({ el, event }) => {

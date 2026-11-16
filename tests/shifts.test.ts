@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { config } from "../src/config/config.ts";
-import { clockingInformation, formatShiftTime, getShifts, groupShiftsByDay, londonDate, nextLondonMidnight, nextShiftRefresh, type Shift, type ShiftsResponse } from "../src/lib/shifts.ts";
+import { clockingInformation, createShift, formatShiftTime, getShifts, groupShiftsByDay, londonDate, nextLondonMidnight, nextShiftRefresh, removeShift, updateShift, type Shift, type ShiftsResponse } from "../src/lib/shifts.ts";
 
 const shift: Shift = {
     id: "shift", site: { id: "site", name: "Office" },
@@ -10,6 +10,7 @@ const shift: Shift = {
     actualStart: null, actualEnd: null, status: "SCHEDULED",
     clockInOpensAt: "2026-11-07T08:30:00+00:00", clockInDeadline: "2026-11-07T14:00:00+00:00",
     clockOutDeadline: null, canClockIn: false, canClockOut: false, requiresManagerCorrection: false,
+    origin: "SCHEDULED_OCCURRENCE", managerEditable: true,
 };
 const response: ShiftsResponse = { timezone: "Europe/London", fromDate: "2026-11-04", toDate: "2026-11-10", shifts: [] };
 
@@ -113,6 +114,26 @@ test("manager requests filter shifts by one encoded employee or site", async (co
     assert.equal(requests[0].searchParams.has("siteId"), false);
     assert.equal(requests[1].searchParams.get("siteId"), filters[1].siteId);
     assert.equal(requests[1].searchParams.has("userId"), false);
+});
+
+test("manager shift mutations use protected one-off endpoints and explicit local times", async (context) => {
+    const requests: { url: URL; init: RequestInit; body?: unknown }[] = [];
+    context.mock.method(globalThis, "fetch", async (input: string, init: RequestInit = {}) => {
+        const url = new URL(input);
+        if (url.pathname.endsWith("/csrf")) return Response.json({ token: "token" });
+        requests.push({ url, init, body: init.body ? JSON.parse(init.body as string) : undefined });
+        return init.method === "DELETE" ? new Response(null, { status: 204 }) : Response.json(shift);
+    });
+    const create = { siteId: "site", userId: "employee", scheduledStart: "2026-11-09T09:00:00", scheduledEnd: "2026-11-09T12:00:00" };
+    await createShift(create);
+    await updateShift("shift /?#", { userId: "other", scheduledStart: "2026-11-10T10:00:00", scheduledEnd: "2026-11-10T13:00:00" });
+    await removeShift("shift /?#");
+    assert.deepEqual(requests.map(({ url, init, body }) => [url.pathname, init.method, body]), [
+        ["/api/shifts", "POST", create],
+        ["/api/shifts/shift%20%2F%3F%23", "PUT", { userId: "other", scheduledStart: "2026-11-10T10:00:00", scheduledEnd: "2026-11-10T13:00:00" }],
+        ["/api/shifts/shift%20%2F%3F%23", "DELETE", undefined],
+    ]);
+    assert.ok(requests.every(({ init }) => new Headers(init.headers).get("X-CSRF-TOKEN") === "token"));
 });
 
 test("400, 404 and server failures are errors, never empty results", async (context) => {

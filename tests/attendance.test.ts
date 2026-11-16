@@ -13,6 +13,7 @@ const shift: Shift = {
     actualStart: null, actualEnd: null, status: "SCHEDULED",
     clockInOpensAt: "2026-11-09T08:30:00Z", clockInDeadline: "2026-11-09T14:00:00Z",
     clockOutDeadline: null, canClockIn: true, canClockOut: false, requiresManagerCorrection: false,
+    origin: "SCHEDULED_OCCURRENCE", managerEditable: true,
 };
 
 test("QR payload must be a plain UUID, allowing whitespace and uppercase", () => {

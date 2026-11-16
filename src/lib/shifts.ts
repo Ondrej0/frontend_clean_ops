@@ -1,7 +1,8 @@
-import { apiFetch } from "./session.ts";
+import { apiFetch, sessionRequest } from "./session.ts";
 import { config } from "../config/config.ts";
 
 export type ShiftStatus = "SCHEDULED" | "IN_PROGRESS" | "COMPLETED" | "CANCELLED" | "NO_SHOW";
+export type ShiftOrigin = "SCHEDULED_OCCURRENCE" | "ONE_OFF" | "ONE_OFF_OVERRIDE";
 
 export interface Shift {
     id: string;
@@ -19,6 +20,8 @@ export interface Shift {
     canClockIn: boolean;
     canClockOut: boolean;
     requiresManagerCorrection: boolean;
+    origin: ShiftOrigin;
+    managerEditable: boolean;
 }
 
 export interface ShiftsResponse {
@@ -60,6 +63,37 @@ export async function getShifts(signal?: AbortSignal, range?: ShiftDateRange, fi
         throw new Error("Unexpected shifts response. Please try again.");
     }
     return data;
+}
+
+export interface CreateShiftRequest {
+    siteId: string;
+    userId: string;
+    scheduledStart: string;
+    scheduledEnd: string;
+}
+
+export interface UpdateShiftRequest {
+    userId: string;
+    scheduledStart: string;
+    scheduledEnd: string;
+}
+
+export async function createShift(request: CreateShiftRequest): Promise<Shift> {
+    const response = await sessionRequest("/api/shifts", {
+        method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(request),
+    }, "Unable to create this shift.");
+    return response.json() as Promise<Shift>;
+}
+
+export async function updateShift(shiftId: string, request: UpdateShiftRequest): Promise<Shift> {
+    const response = await sessionRequest(`/api/shifts/${encodeURIComponent(shiftId)}`, {
+        method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(request),
+    }, "Unable to update this shift.");
+    return response.json() as Promise<Shift>;
+}
+
+export async function removeShift(shiftId: string): Promise<void> {
+    await sessionRequest(`/api/shifts/${encodeURIComponent(shiftId)}`, { method: "DELETE" }, "Unable to remove this shift.");
 }
 
 const timezone = "Europe/London";

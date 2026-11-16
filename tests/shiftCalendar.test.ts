@@ -10,6 +10,7 @@ const shift: Shift = {
     actualStart: "2026-07-06T09:05:00+01:00", actualEnd: null, status: "IN_PROGRESS",
     clockInOpensAt: "2026-07-06T08:30:00+01:00", clockInDeadline: "2026-07-06T14:00:00+01:00",
     clockOutDeadline: null, canClockIn: false, canClockOut: true, requiresManagerCorrection: false,
+    origin: "SCHEDULED_OCCURRENCE", managerEditable: false,
 };
 
 test("events retain real shift IDs and scheduled dates, never recurring rules or clocking times", () => {

@@ -39,6 +39,8 @@ The browser carries a session cookie. The backend uses that session to identify 
 
 Shift and schedule reads use `/api/shifts` and `/api/schedules/by-site`. Managers filter shifts by either `userId` or `siteId`; cleaners always receive only their own shifts. The duplicate `/api/me/shifts` and `/api/me/schedules` routes have been removed from `EmployeeSessionController`, which only provides session identity and CSRF tokens.
 
+Managers can create one-off shifts with `POST /api/shifts`, adjust a future unstarted occurrence with `PUT /api/shifts/{shiftId}`, and remove one with `DELETE /api/shifts/{shiftId}`. These operations are tenant-scoped and never update a schedule or schedule rule. Schedule-generated occurrences retain provenance so a one-off override or removal is not recreated by ordinary regeneration.
+
 The frontend no longer submits a tenant ID with business requests. Cleaner list requests also omit their own user ID. Manager filters still send an employee ID because it identifies the requested resource, not the signed-in actor. Legacy backend tenant/user fields remain optional for compatibility, but supplied values must satisfy the same ownership checks and cannot override the session.
 
 ## Local development and deployment

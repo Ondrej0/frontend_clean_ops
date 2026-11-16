@@ -64,10 +64,20 @@
     border-width: 1px 1px 1px 3px;
     border-radius: 8px;
     box-shadow: 0 2px 5px rgb(15 23 42 / 5%);
+    overflow: hidden;
 }
 
 .weekly-calendar .fc .fc-timegrid-event .fc-event-main {
+    height: 100%;
+    min-width: 0;
+    overflow: hidden;
     padding: 4px 6px;
+}
+
+.weekly-calendar .fc .fc-timegrid-event .fc-event-main-frame {
+    height: 100%;
+    min-width: 0;
+    overflow: hidden;
 }
 
 .weekly-calendar .fc .fc-event-time {

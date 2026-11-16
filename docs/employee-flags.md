@@ -33,6 +33,9 @@ One Spring Security filter chain protects the entire API. Only login and CSRF-to
 | `GET /api/session/me` | Current active employee identity and role. |
 | `POST /api/session/logout` | Invalidate the session. |
 | `GET /api/shifts?fromDate=YYYY-MM-DD&toDate=YYYY-MM-DD` | Cleaner: own shifts. Manager: supply either a same-company `userId` or `siteId` filter. |
+| `POST /api/shifts` | Manager: create a future standalone one-off shift for an active cleaner and tenant site. |
+| `PUT /api/shifts/{shiftId}` | Manager: adjust the time/day or cleaner for one future unstarted occurrence without changing its schedule. |
+| `DELETE /api/shifts/{shiftId}` | Manager: hide one future occurrence and preserve a regeneration exception. |
 | `GET /api/schedules/by-site` | Cleaner: own assigned schedules. Manager: company schedules, optionally filtered by `userId`. |
 | `POST /api/employee-flags/schedule-overlaps` | Cleaner: JSON `{ "fromDate": "YYYY-MM-DD", "toDate": "YYYY-MM-DD" }`, maximum 31 inclusive days. Returns `detected`, `created`, `alreadyReported` counts. Identity override fields are rejected. |
 | `GET /api/employee-flags?status=OPEN&employeeId=<UUID>` | Manager: tenant flags; both filters optional. Open flags sort first, then newest reports. Foreign-tenant employee filters return 404. |

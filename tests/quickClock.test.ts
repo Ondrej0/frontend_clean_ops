@@ -11,6 +11,7 @@ const shift: Shift = {
     actualStart: null, actualEnd: null, status: "SCHEDULED",
     clockInOpensAt: "2026-11-10T08:30:00Z", clockInDeadline: "2026-11-10T10:00:00Z",
     clockOutDeadline: null, canClockIn: false, canClockOut: false, requiresManagerCorrection: false,
+    origin: "SCHEDULED_OCCURRENCE", managerEditable: true,
 };
 
 test("quick clock-in chooses the earliest available shift without mutating schedule order", () => {
