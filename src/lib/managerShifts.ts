@@ -46,6 +46,7 @@ export function buildManagerShiftEvents(shifts: Shift[], timezone: string, conte
                 status: shift.status,
                 statusLabel: presentation.label,
                 actualTime,
+                attendanceException: shift.attendanceException,
                 requiresManagerCorrection: shift.requiresManagerCorrection,
                 origin: shift.origin,
                 originLabel: shift.origin === "ONE_OFF_OVERRIDE" ? "One-off override" : shift.origin === "ONE_OFF" ? "One-off shift" : null,

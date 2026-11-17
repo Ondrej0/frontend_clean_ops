@@ -8,6 +8,7 @@ import { ShiftEditorDialog, type ShiftEditorValue } from "./ShiftEditorDialog";
 import { calendarRange, calendarTime, calendarWeek } from "@/lib/shiftCalendar";
 import { getShifts, updateShift, type ShiftFilter, type ShiftsResponse } from "@/lib/shifts";
 import { buildManagerShiftEvents, defaultShiftTimes, type ManagerShiftContext } from "@/lib/managerShifts";
+import { attendanceVariance } from "@/lib/shifts";
 
 export function ManagerShiftsSection({ filter, context }: { filter: ShiftFilter; context: ManagerShiftContext }) {
     const [range, setRange] = useState(() => calendarWeek(Date.now()));
@@ -126,11 +127,14 @@ export function ManagerShiftsSection({ filter, context }: { filter: ShiftFilter;
                         <div className="mt-1 truncate text-[10px] font-semibold uppercase tracking-wide">{event.extendedProps.statusLabel}</div>
                         {event.extendedProps.originLabel && <div className="mt-1 truncate text-[10px] font-semibold">{event.extendedProps.originLabel}</div>}
                         {event.extendedProps.actualTime && <div className="mt-1 truncate text-[10px]">Actual {event.extendedProps.actualTime}</div>}
+                        {event.extendedProps.attendanceException?.status === "OPEN" && <div className="mt-1 truncate text-[10px] font-semibold text-amber-700">Needs review</div>}
                     </div>
                 )}
                 eventDidMount={({ el, event }) => {
                     const details = event.extendedProps;
-                    const label = `${event.title}. ${details.statusLabel}.${details.actualTime ? ` Actual ${details.actualTime}.` : ""}`;
+                    const variance = attendanceVariance(details.shift).join("; ");
+                    const review = details.attendanceException?.status === "OPEN" ? " Attendance exception needs review." : "";
+                    const label = `${event.title}. ${details.statusLabel}.${details.actualTime ? ` Actual ${details.actualTime}.` : ""}${variance ? ` ${variance}.` : ""}${review}`;
                     el.title = label;
                     el.setAttribute("aria-label", label);
                     el.tabIndex = 0;
@@ -144,6 +148,7 @@ export function ManagerShiftsSection({ filter, context }: { filter: ShiftFilter;
                     <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-slate-700">Scheduled</span>
                     <span className="rounded-full border border-blue-200 bg-blue-50 px-3 py-1.5 text-blue-700">In progress</span>
                     <span className="rounded-full border border-green-200 bg-green-50 px-3 py-1.5 text-green-700">Completed</span>
+                    <span className="rounded-full border border-amber-200 bg-amber-50 px-3 py-1.5 text-amber-700">Attendance exception / needs review</span>
                     <span className="rounded-full border border-red-200 bg-red-50 px-3 py-1.5 text-red-700">No show / correction required</span>
                     <span className="rounded-full border border-slate-300 bg-slate-100 px-3 py-1.5 text-slate-600">Cancelled</span>
                 </div>

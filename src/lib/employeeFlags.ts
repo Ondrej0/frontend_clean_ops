@@ -6,7 +6,7 @@ export interface EmployeeFlag {
     id: string;
     employeeId: string;
     employeeName: string;
-    type: "SCHEDULE_OVERLAP";
+    type: "SCHEDULE_OVERLAP" | "ATTENDANCE_EXCEPTION";
     status: EmployeeFlagStatus;
     message: string;
     createdAt: string;

@@ -12,11 +12,18 @@ const shift: Shift = {
     clockInOpensAt: "2026-11-09T08:30:00Z", clockInDeadline: "2026-11-09T14:00:00Z",
     clockOutDeadline: null, canClockIn: false, canClockOut: false, requiresManagerCorrection: false,
     origin: "SCHEDULED_OCCURRENCE", managerEditable: true,
+    attendanceException: null,
 };
 
 test("manager shift headings emphasize the employee for a site and the site for an employee", () => {
     assert.equal(managerShiftHeading(shift, "site"), "Alex Smith");
     assert.equal(managerShiftHeading(shift, "employee"), "Office");
+});
+
+test("completed shifts retain their status while carrying an open attendance exception", () => {
+    const [event] = buildManagerShiftEvents([{ ...shift, actualStart: "2026-11-09T09:05:00Z", actualEnd: "2026-11-09T11:00:00Z", status: "COMPLETED", attendanceException: { status: "OPEN", message: "Late by 5m" } }], "Europe/London", "site");
+    assert.equal(event.extendedProps.statusLabel, "Completed");
+    assert.equal(event.extendedProps.attendanceException?.status, "OPEN");
 });
 
 test("manager calendars retain dated shift status and attendance details without action metadata", () => {

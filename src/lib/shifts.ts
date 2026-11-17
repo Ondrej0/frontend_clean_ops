@@ -22,6 +22,7 @@ export interface Shift {
     requiresManagerCorrection: boolean;
     origin: ShiftOrigin;
     managerEditable: boolean;
+    attendanceException?: { status: "OPEN" | "RESOLVED"; message: string } | null;
 }
 
 export interface ShiftsResponse {
@@ -119,6 +120,29 @@ export function formatShiftDate(value: string): string {
 
 export function formatShiftDateTime(value: string): string {
     return `${formatShiftDate(value)}, ${formatShiftTime(value)}`;
+}
+
+function conciseDuration(milliseconds: number): string {
+    const minutes = Math.round(Math.abs(milliseconds) / 60_000);
+    const hours = Math.floor(minutes / 60);
+    const remainder = minutes % 60;
+    return [hours ? `${hours}h` : "", remainder ? `${remainder}m` : ""].filter(Boolean).join(" ") || "0m";
+}
+
+/** Factual attendance variance for completed shifts; the server remains the review authority. */
+export function attendanceVariance(shift: Shift): string[] {
+    if (!shift.actualStart || !shift.actualEnd) return [];
+    const scheduledStart = Date.parse(shift.scheduledStart);
+    const scheduledEnd = Date.parse(shift.scheduledEnd);
+    const actualStart = Date.parse(shift.actualStart);
+    const actualEnd = Date.parse(shift.actualEnd);
+    const variance: string[] = [];
+    if (actualStart > scheduledStart) variance.push(`Late by ${conciseDuration(actualStart - scheduledStart)}`);
+    if (actualEnd < scheduledEnd) variance.push(`Left early by ${conciseDuration(scheduledEnd - actualEnd)}`);
+    const scheduledDuration = scheduledEnd - scheduledStart;
+    const workedDuration = actualEnd - actualStart;
+    if (workedDuration < scheduledDuration) variance.push(`Worked ${conciseDuration(workedDuration)} of ${conciseDuration(scheduledDuration)}`);
+    return variance;
 }
 
 export function groupShiftsByDay(data: ShiftsResponse) {

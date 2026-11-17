@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { config } from "../src/config/config.ts";
-import { clockingInformation, createShift, formatShiftTime, getShifts, groupShiftsByDay, londonDate, nextLondonMidnight, nextShiftRefresh, removeShift, updateShift, type Shift, type ShiftsResponse } from "../src/lib/shifts.ts";
+import { attendanceVariance, clockingInformation, createShift, formatShiftTime, getShifts, groupShiftsByDay, londonDate, nextLondonMidnight, nextShiftRefresh, removeShift, updateShift, type Shift, type ShiftsResponse } from "../src/lib/shifts.ts";
 
 const shift: Shift = {
     id: "shift", site: { id: "site", name: "Office" },
@@ -59,6 +59,10 @@ test("terminal statuses never advertise clocking and correction explains the mis
     const information = clockingInformation({ ...shift, status: "IN_PROGRESS", requiresManagerCorrection: true, canClockOut: true }, Date.now());
     assert.equal(information[0], "Manager correction required");
     assert.match(information[1], /cannot resolve.*yourself/);
+});
+
+test("attendance variance states late arrival, early departure, and short worked time", () => {
+    assert.deepEqual(attendanceVariance({ ...shift, actualStart: "2026-11-07T09:05:00Z", actualEnd: "2026-11-07T10:51:00Z" }), ["Late by 5m", "Left early by 1h 9m", "Worked 1h 46m of 3h"]);
 });
 
 test("UK midnight refresh accounts for both DST transitions", () => {

@@ -67,7 +67,7 @@ export function EmployeeFlagsSection({ employeeId }: { employeeId?: string }) {
             {!loading && !error && flags.length === 0 && <p className="py-8 text-center text-slate-500">No {status ? status.toLowerCase() + " " : ""}employee flags.</p>}
             {!loading && flags.map((flag) => <article key={flag.id} className={`rounded-xl border p-4 sm:p-5 ${flag.status === "OPEN" ? "border-red-200 bg-red-50/40" : "border-slate-200 bg-slate-50"}`}>
                 <div className="flex flex-wrap items-start justify-between gap-3">
-                    <div><h3 className="font-semibold text-slate-900">{flag.employeeName}</h3><p className="mt-1 text-xs font-medium text-slate-500">{flag.type === "SCHEDULE_OVERLAP" ? "Schedule overlap" : flag.type}</p></div>
+                    <div><h3 className="font-semibold text-slate-900">{flag.employeeName}</h3><p className="mt-1 text-xs font-medium text-slate-500">{flag.type === "SCHEDULE_OVERLAP" ? "Schedule overlap" : "Attendance exception"}</p></div>
                     <span className={`rounded-full px-3 py-1 text-xs font-semibold ${flag.status === "OPEN" ? "bg-red-100 text-red-800" : "bg-green-100 text-green-800"}`}>{flag.status === "OPEN" ? "Open" : "Resolved"}</span>
                 </div>
                 <p className="mt-3 break-words text-sm leading-relaxed text-slate-700">{flag.message}</p>

@@ -1,7 +1,7 @@
 import { ArrowRight, Building2, Clock3, LogOut, ScanLine } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { canRecordAttendance, type AttendanceAction } from "@/lib/attendance";
-import { clockingInformation, formatShiftDateTime, formatShiftTime, londonDate, type Shift, type ShiftStatus } from "@/lib/shifts";
+import { attendanceVariance, clockingInformation, formatShiftDateTime, formatShiftTime, londonDate, type Shift, type ShiftStatus } from "@/lib/shifts";
 
 const statuses: Record<ShiftStatus, { label: string; className: string }> = {
     COMPLETED: { label: "Completed", className: "bg-green-50 text-green-700" },
@@ -16,6 +16,7 @@ export function ShiftCard({ shift, now, onClock }: { shift: Shift; now: number; 
     const overnight = londonDate(shift.scheduledStart) !== londonDate(shift.scheduledEnd);
     const information = clockingInformation(shift, now);
     const actions = (["clockIn", "clockOut"] as const).filter((action) => canRecordAttendance(shift, action));
+    const variance = attendanceVariance(shift);
     return (
         <article className={`rounded-2xl border bg-white p-5 shadow-sm ${actions.length ? "border-emerald-200 ring-1 ring-emerald-100" : "border-slate-200"}`}>
             <div className="flex flex-wrap items-start justify-between gap-3">
@@ -35,6 +36,12 @@ export function ShiftCard({ shift, now, onClock }: { shift: Shift; now: number; 
                 <div className="mt-3 space-y-1 text-sm text-slate-500">
                     {shift.actualStart && <p>Actual start: {formatShiftDateTime(shift.actualStart)}</p>}
                     {shift.actualEnd && <p>Actual end: {formatShiftDateTime(shift.actualEnd)}</p>}
+                </div>
+            )}
+            {variance.length > 0 && (
+                <div className="mt-3 rounded-xl bg-slate-50 p-3 text-sm text-slate-600">
+                    <p className="font-medium text-slate-700">Attendance record</p>
+                    <p className="mt-1">{variance.join(" · ")}</p>
                 </div>
             )}
             {information.length > 0 && (
