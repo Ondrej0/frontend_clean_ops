@@ -4,6 +4,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { getCleaners, type Employee } from "@/lib/employee";
 import { getSites, type Site } from "@/lib/sites";
 import { createShift, removeShift, updateShift, type Shift, type ShiftFilter } from "@/lib/shifts";
+import { calendarTime } from "@/lib/shiftCalendar";
 import type { ManagerShiftContext } from "@/lib/managerShifts";
 
 export interface ShiftEditorValue {
@@ -37,6 +38,7 @@ export function ShiftEditorDialog({ value, filter, context, onClose, onSaved }: 
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState("");
     const readOnly = value.shift !== undefined && !value.shift.managerEditable;
+    const startsInPast = !value.shift && start < calendarTime(Date.now()).slice(0, 16);
 
     useEffect(() => {
         let active = true;
@@ -116,6 +118,7 @@ export function ShiftEditorDialog({ value, filter, context, onClose, onSaved }: 
                         <input type="datetime-local" value={end} onChange={(event) => setEnd(event.target.value)} disabled={readOnly || saving} required className={inputClass} />
                     </label>
                 </div>
+                {startsInPast && <p className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">This shift starts in the past. It will be added as a one-off shift, but the recorded attendance times will still determine its outcome.</p>}
                 {value.shift?.origin === "ONE_OFF_OVERRIDE" && <p className="rounded-xl bg-amber-50 px-4 py-3 text-sm text-amber-800">One-off override of {value.shift.scheduleName || "a recurring schedule"}.</p>}
                 {error && <p role="alert" className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>}
 
