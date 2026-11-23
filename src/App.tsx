@@ -20,6 +20,7 @@ import {CleanerSites} from "@/pages/cleaner/sites.tsx";
 import {CleanerSiteDetails} from "@/pages/cleaner/siteDetails.tsx";
 import {MySchedule} from "@/pages/cleaner/schedule.tsx";
 import {CleanerProfile} from "@/pages/cleaner/profile.tsx";
+import { Opportunities } from "@/pages/cleaner/opportunities.tsx";
 
 function AppPages({ user }: { user: SessionUser }) {
     const location = useLocation();
@@ -101,7 +102,7 @@ function AppPages({ user }: { user: SessionUser }) {
 
                         <Route
                             path="/cleaner/opportunities"
-                            element={<h1>Cleaner - Opportunities</h1>}
+                            element={<Opportunities />}
                         />
 
                         <Route

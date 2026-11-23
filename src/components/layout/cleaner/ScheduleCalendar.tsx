@@ -106,12 +106,12 @@ export function ScheduleCalendar() {
                         <div className="truncate font-semibold">{event.extendedProps.siteName}</div>
                         <div className="truncate">{event.extendedProps.scheduleName}</div>
                         <div className="mt-1 truncate text-[11px] font-medium tabular-nums">{timeText}</div>
-                        <div className="mt-1 truncate text-[10px] font-semibold uppercase tracking-wide">{event.extendedProps.cancelled ? "Cancelled" : event.extendedProps.overlaps ? "Overlap" : "No overlap"}</div>
+                        <div className="mt-1 truncate text-[10px] font-semibold uppercase tracking-wide">{event.extendedProps.cancelled ? "Cancelled" : event.extendedProps.offered ? "Offered" : event.extendedProps.overlaps ? "Overlap" : "No overlap"}</div>
                     </div>
                 )}
                 eventDidMount={({ el, event }) => {
                     const details = event.extendedProps;
-                    const label = `${event.title}, ${details.timeLabel}. ${details.status.replaceAll("_", " ")}. ${details.overlaps ? `Overlaps with ${details.conflicts.join(", ")}` : "No overlap"}`;
+                    const label = `${event.title}, ${details.timeLabel}. ${details.status.replaceAll("_", " ")}. ${details.offered ? "Offered for cover." : details.overlaps ? `Overlaps with ${details.conflicts.join(", ")}` : "No overlap"}`;
                     el.title = label;
                     el.setAttribute("aria-label", label);
                     el.tabIndex = 0;
@@ -127,6 +127,7 @@ export function ScheduleCalendar() {
                 <div className="flex flex-wrap gap-2 text-xs font-semibold">
                     <span className="flex items-center gap-2 rounded-full border border-green-200 bg-green-50 px-3 py-1.5 text-green-800"><span aria-hidden="true" className="size-2 rounded-full bg-green-700" />No overlap</span>
                     <span className="flex items-center gap-2 rounded-full border border-red-200 bg-red-50 px-3 py-1.5 text-red-800"><span aria-hidden="true" className="size-2 rounded-full bg-red-700" />Overlapping hours</span>
+                    <span className="flex items-center gap-2 rounded-full border border-yellow-200 bg-yellow-50 px-3 py-1.5 text-yellow-800"><span aria-hidden="true" className="size-2 rounded-full bg-yellow-700" />Offered for cover</span>
                 </div>
                 {loading && <p role="status" className="mt-3 text-sm text-slate-500">Loading shifts…</p>}
                 {!loading && error && <div role="alert" className="mt-3 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-800">

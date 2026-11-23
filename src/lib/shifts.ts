@@ -22,7 +22,25 @@ export interface Shift {
     requiresManagerCorrection: boolean;
     origin: ShiftOrigin;
     managerEditable: boolean;
+    offer?: ShiftOfferState | null;
     attendanceException?: { status: "OPEN" | "RESOLVED"; message: string } | null;
+}
+
+/** An unclaimed handover for this individual shift; it never changes its schedule rule. */
+export interface ShiftOfferState {
+    offeredAt: string;
+    offeredBy: { id: string; firstName: string; lastName: string };
+}
+
+export interface ShiftOffer {
+    shift: Shift;
+    offeredAt: string;
+    offeredBy: { id: string; firstName: string; lastName: string };
+}
+
+export interface ShiftOffersResponse {
+    timezone: string;
+    offers: ShiftOffer[];
 }
 
 export interface ShiftsResponse {
@@ -118,6 +136,43 @@ export async function managerClock(shiftId: string, action: "in" | "out", reason
 
 export async function removeShift(shiftId: string): Promise<void> {
     await sessionRequest(`/api/shifts/${encodeURIComponent(shiftId)}`, { method: "DELETE" }, "Unable to remove this shift.");
+}
+
+export async function offerShift(shiftId: string): Promise<Shift> {
+    const response = await sessionRequest(`/api/shifts/${encodeURIComponent(shiftId)}/offer`, {
+        method: "POST",
+    }, "Unable to offer this shift.");
+    return response.json() as Promise<Shift>;
+}
+
+export async function withdrawShiftOffer(shiftId: string): Promise<Shift> {
+    const response = await sessionRequest(`/api/shifts/${encodeURIComponent(shiftId)}/offer`, {
+        method: "DELETE",
+    }, "Unable to withdraw this shift offer.");
+    return response.json() as Promise<Shift>;
+}
+
+export async function getShiftOffers(signal?: AbortSignal): Promise<ShiftOffersResponse> {
+    const response = await apiFetch(`${config.apiBaseUrl}/api/shift-offers`, { signal, cache: "no-store" });
+    if (!response.ok) throw new Error("We couldn't load available shifts. Please try again.");
+    const data = await response.json() as ShiftOffersResponse;
+    if (!Array.isArray(data.offers) || typeof data.timezone !== "string") {
+        throw new Error("Unexpected shift offers response. Please try again.");
+    }
+    return data;
+}
+
+export async function claimShiftOffer(shiftId: string): Promise<Shift> {
+    const response = await sessionRequest(`/api/shift-offers/${encodeURIComponent(shiftId)}/claim`, {
+        method: "POST",
+    }, "This shift is no longer available. Refresh opportunities and try again.");
+    return response.json() as Promise<Shift>;
+}
+
+/** A cleaner can only hand over an unstarted, scheduled occurrence more than an hour ahead. */
+export function canOfferShift(shift: Shift, now: number): boolean {
+    return shift.status === "SCHEDULED" && !shift.actualStart && !shift.actualEnd
+        && Date.parse(shift.scheduledStart) - now > 60 * 60 * 1000;
 }
 
 const timezone = "Europe/London";

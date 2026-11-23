@@ -1,7 +1,7 @@
-import { ArrowRight, Building2, Clock3, LogOut, ScanLine } from "lucide-react";
+import { ArrowRight, Building2, Clock3, HandHeart, LogOut, ScanLine, Undo2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { canRecordAttendance, type AttendanceAction } from "@/lib/attendance";
-import { attendanceVariance, clockingInformation, formatShiftDateTime, formatShiftTime, londonDate, type Shift, type ShiftStatus } from "@/lib/shifts";
+import { attendanceVariance, canOfferShift, clockingInformation, formatShiftDateTime, formatShiftTime, londonDate, type Shift, type ShiftStatus } from "@/lib/shifts";
 
 const statuses: Record<ShiftStatus, { label: string; className: string }> = {
     COMPLETED: { label: "Completed", className: "bg-green-50 text-green-700" },
@@ -11,14 +11,14 @@ const statuses: Record<ShiftStatus, { label: string; className: string }> = {
     SCHEDULED: { label: "Scheduled", className: "bg-slate-50 text-slate-700" },
 };
 
-export function ShiftCard({ shift, now, onClock }: { shift: Shift; now: number; onClock: (action: AttendanceAction) => void }) {
+export function ShiftCard({ shift, now, onClock, onOffer }: { shift: Shift; now: number; onClock: (action: AttendanceAction) => void; onOffer?: (shift: Shift, action: "offer" | "withdraw") => void }) {
     const status = statuses[shift.status];
     const overnight = londonDate(shift.scheduledStart) !== londonDate(shift.scheduledEnd);
     const information = clockingInformation(shift, now);
     const actions = (["clockIn", "clockOut"] as const).filter((action) => canRecordAttendance(shift, action));
     const variance = attendanceVariance(shift);
     return (
-        <article className={`rounded-2xl border bg-white p-5 shadow-sm ${actions.length ? "border-emerald-200 ring-1 ring-emerald-100" : "border-slate-200"}`}>
+        <article className={`rounded-2xl border bg-white p-5 shadow-sm ${shift.offer ? "border-yellow-300 bg-yellow-50/60 ring-1 ring-yellow-200" : actions.length ? "border-emerald-200 ring-1 ring-emerald-100" : "border-slate-200"}`}>
             <div className="flex flex-wrap items-start justify-between gap-3">
                 <h3 className="flex min-w-0 items-center gap-2 text-lg font-semibold text-slate-900">
                     <Building2 className="size-5 shrink-0 text-blue-600" aria-hidden="true" />
@@ -32,6 +32,7 @@ export function ShiftCard({ shift, now, onClock }: { shift: Shift; now: number; 
                     ? `${formatShiftDateTime(shift.scheduledStart)} – ${formatShiftDateTime(shift.scheduledEnd)} (overnight)`
                     : `${formatShiftTime(shift.scheduledStart)}–${formatShiftTime(shift.scheduledEnd)}`}</span>
             </p>
+            {shift.offer && <div className="mt-3 rounded-xl border border-yellow-200 bg-yellow-100/70 p-3 text-sm text-yellow-900"><p className="font-semibold">Offered for cover</p><p className="mt-1">Other cleaners can take this shift until one hour before it starts.</p></div>}
             {(shift.actualStart || shift.actualEnd) && (
                 <div className="mt-3 space-y-1 text-sm text-slate-500">
                     {shift.actualStart && <p>Actual start: {formatShiftDateTime(shift.actualStart)}</p>}
@@ -56,6 +57,12 @@ export function ShiftCard({ shift, now, onClock }: { shift: Shift; now: number; 
                     <ArrowRight className="size-5 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
                 </button>
             ))}
+            {onOffer && (shift.offer || canOfferShift(shift, now)) && (
+                <button type="button" onClick={() => onOffer(shift, shift.offer ? "withdraw" : "offer")} className={`mt-4 flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border px-4 py-3 text-sm font-semibold transition focus-visible:outline-2 focus-visible:outline-offset-2 ${shift.offer ? "border-yellow-300 bg-white text-yellow-900 hover:bg-yellow-100 focus-visible:outline-yellow-600" : "border-blue-200 bg-white text-blue-700 hover:bg-blue-50 focus-visible:outline-blue-600"}`}>
+                    {shift.offer ? <Undo2 className="size-4" aria-hidden="true" /> : <HandHeart className="size-4" aria-hidden="true" />}
+                    {shift.offer ? "Withdraw offer" : "Offer this shift"}
+                </button>
+            )}
         </article>
     );
 }

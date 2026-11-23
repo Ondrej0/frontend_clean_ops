@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { config } from "../src/config/config.ts";
-import { attendanceVariance, clockingInformation, correctShift, createShift, formatShiftTime, getShifts, groupShiftsByDay, londonDate, managerClock, nextLondonMidnight, nextShiftRefresh, removeShift, updateShift, type Shift, type ShiftsResponse } from "../src/lib/shifts.ts";
+import { attendanceVariance, canOfferShift, claimShiftOffer, clockingInformation, correctShift, createShift, formatShiftTime, getShiftOffers, getShifts, groupShiftsByDay, londonDate, managerClock, nextLondonMidnight, nextShiftRefresh, offerShift, removeShift, updateShift, withdrawShiftOffer, type Shift, type ShiftsResponse } from "../src/lib/shifts.ts";
 
 const shift: Shift = {
     id: "shift", site: { id: "site", name: "Office" },
@@ -142,6 +142,35 @@ test("manager shift mutations use protected endpoints and explicit local times",
         ["/api/shifts/shift%20%2F%3F%23", "DELETE", undefined],
     ]);
     assert.ok(requests.every(({ init }) => new Headers(init.headers).get("X-CSRF-TOKEN") === "token"));
+});
+
+test("cleaner shift offer requests use dedicated protected endpoints", async (context) => {
+    const calls: [string, string][] = [];
+    context.mock.method(globalThis, "fetch", async (input: string, init: RequestInit = {}) => {
+        if (input.endsWith("/csrf")) return Response.json({ token: "csrf" });
+        calls.push([new URL(input).pathname, init.method || "GET"]);
+        if (input.endsWith("/shift-offers")) return Response.json({ timezone: "Europe/London", offers: [] });
+        return Response.json(shift);
+    });
+    await offerShift("shift /?#");
+    await withdrawShiftOffer("shift /?#");
+    await getShiftOffers();
+    await claimShiftOffer("shift /?#");
+    assert.deepEqual(calls, [
+        ["/api/shifts/shift%20%2F%3F%23/offer", "POST"],
+        ["/api/shifts/shift%20%2F%3F%23/offer", "DELETE"],
+        ["/api/shift-offers", "GET"],
+        ["/api/shift-offers/shift%20%2F%3F%23/claim", "POST"],
+    ]);
+});
+
+test("only an unstarted scheduled shift strictly more than one hour ahead can be offered", () => {
+    const now = Date.parse("2026-11-07T08:00:00Z");
+    assert.equal(canOfferShift(shift, now), false);
+    assert.equal(canOfferShift({ ...shift, scheduledStart: "2026-11-07T09:00:00.001Z" }, now), true);
+    assert.equal(canOfferShift({ ...shift, scheduledStart: "2026-11-07T09:00:00Z" }, now), false);
+    assert.equal(canOfferShift({ ...shift, status: "IN_PROGRESS" }, now), false);
+    assert.equal(canOfferShift({ ...shift, actualStart: "2026-11-07T08:30:00Z" }, now), false);
 });
 
 test("400, 404 and server failures are errors, never empty results", async (context) => {

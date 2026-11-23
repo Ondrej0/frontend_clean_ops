@@ -34,6 +34,7 @@ export function calendarRange(start: Date, end: Date): ShiftDateRange {
 export function buildShiftEvents(shifts: Shift[], timezone: string) {
     return shifts.map((shift) => {
         const cancelled = shift.status === "CANCELLED";
+        const offered = Boolean(shift.offer);
         const conflicts = cancelled ? [] : shifts.filter((other) => other.id !== shift.id && other.status !== "CANCELLED"
             && Date.parse(shift.scheduledStart) < Date.parse(other.scheduledEnd)
             && Date.parse(other.scheduledStart) < Date.parse(shift.scheduledEnd));
@@ -46,12 +47,12 @@ export function buildShiftEvents(shifts: Shift[], timezone: string) {
             id: shift.id,
             title: `${shift.site.name} · ${scheduleName}`,
             start, end, allDay: false,
-            backgroundColor: cancelled ? "#f1f5f9" : overlaps ? "#fef2f2" : "#f0fdf4",
-            borderColor: cancelled ? "#94a3b8" : overlaps ? "#dc2626" : "#16a34a",
-            textColor: cancelled ? "#475569" : overlaps ? "#991b1b" : "#166534",
+            backgroundColor: cancelled ? "#f1f5f9" : offered ? "#fefce8" : overlaps ? "#fef2f2" : "#f0fdf4",
+            borderColor: cancelled ? "#94a3b8" : offered ? "#ca8a04" : overlaps ? "#dc2626" : "#16a34a",
+            textColor: cancelled ? "#475569" : offered ? "#854d0e" : overlaps ? "#991b1b" : "#166534",
             extendedProps: {
                 shiftId: shift.id, siteName: shift.site.name, scheduleName,
-                status: shift.status, cancelled, timeLabel, overlaps,
+                status: shift.status, cancelled, offered, timeLabel, overlaps,
                 conflicts: conflicts.map((other) => `${other.site.name} · ${other.scheduleName || "Shift"}`),
             },
         };

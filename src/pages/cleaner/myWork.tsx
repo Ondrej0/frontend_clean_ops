@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { ShiftCard } from "@/components/layout/cleaner/myWork/ShiftCard";
 import { AttendanceScanner } from "@/components/layout/cleaner/myWork/AttendanceScanner";
 import type { AttendanceAction } from "@/lib/attendance";
-import { formatShiftDate, getShifts, groupShiftsByDay, londonDate, nextShiftRefresh, type Shift, type ShiftsResponse } from "@/lib/shifts";
+import { formatShiftDate, getShifts, groupShiftsByDay, londonDate, nextShiftRefresh, offerShift, withdrawShiftOffer, type Shift, type ShiftsResponse } from "@/lib/shifts";
 
 export function MyWork() {
     const [data, setData] = useState<ShiftsResponse | null>(null);
@@ -13,6 +13,7 @@ export function MyWork() {
     const [now, setNow] = useState(Date.now);
     const [attempt, setAttempt] = useState(0);
     const [scanner, setScanner] = useState<{ shift: Shift; action: AttendanceAction } | null>(null);
+    const [offering, setOffering] = useState<string | null>(null);
     const [notice, setNotice] = useState("");
 
     function closeScanner() {
@@ -77,6 +78,21 @@ export function MyWork() {
         { title: "Recent shifts", days: days.filter((day) => day.date < today).reverse() },
     ];
 
+    async function changeOffer(shift: Shift, action: "offer" | "withdraw") {
+        if (offering) return;
+        setOffering(shift.id);
+        setNotice("");
+        try {
+            await (action === "offer" ? offerShift(shift.id) : withdrawShiftOffer(shift.id));
+            setNotice(action === "offer" ? `Your ${shift.site.name} shift is now available for another cleaner to take.` : `Your ${shift.site.name} shift is no longer offered.`);
+            setAttempt((value) => value + 1);
+        } catch (cause) {
+            setNotice(cause instanceof Error ? cause.message : "We couldn't update this shift offer. Please try again.");
+        } finally {
+            setOffering(null);
+        }
+    }
+
     return (
         <main className="min-h-full p-6 sm:p-10">
             <div className="mx-auto max-w-6xl">
@@ -117,7 +133,7 @@ export function MyWork() {
                                                     {day.date === today && <Badge className="bg-blue-600 text-white">Today</Badge>}
                                                 </div>
                                                 {day.shifts.length === 0 ? <p className="text-sm text-slate-500">No shifts</p> : (
-                                                    <div className="grid gap-4 lg:grid-cols-2">{day.shifts.map((shift) => <ShiftCard key={shift.id} shift={shift} now={now} onClock={(action) => { setNotice(""); setScanner({ shift, action }); }} />)}</div>
+                                                    <div className="grid gap-4 lg:grid-cols-2">{day.shifts.map((shift) => <ShiftCard key={shift.id} shift={shift} now={now} onClock={(action) => { setNotice(""); setScanner({ shift, action }); }} onOffer={offering ? undefined : (offeredShift, action) => void changeOffer(offeredShift, action)} />)}</div>
                                                 )}
                                             </section>
                                         ))}

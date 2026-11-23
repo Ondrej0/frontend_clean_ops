@@ -57,6 +57,13 @@ test("cancelled shifts remain visible without creating clashes; standalone shift
     assert.equal(events[1].title, "Office · Shift");
 });
 
+test("offered shifts are marked yellow in the cleaner calendar", () => {
+    const [event] = buildShiftEvents([{ ...shift, offer: { offeredAt: "2026-07-01T09:00:00Z", offeredBy: { id: "employee-1", firstName: "Alex", lastName: "Smith" } } }], "Europe/London");
+    assert.equal(event.extendedProps.offered, true);
+    assert.equal(event.backgroundColor, "#fefce8");
+    assert.equal(event.borderColor, "#ca8a04");
+});
+
 test("calendar uses UK wall time in summer and winter, including DST transition nights", () => {
     assert.equal(calendarTime("2026-07-05T23:30:00Z"), "2026-07-06T00:30:00");
     assert.equal(calendarTime("2026-11-08T23:30:00Z"), "2026-11-08T23:30:00");
