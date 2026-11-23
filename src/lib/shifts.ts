@@ -77,6 +77,14 @@ export interface UpdateShiftRequest {
     userId: string;
     scheduledStart: string;
     scheduledEnd: string;
+    reason?: string;
+}
+
+export interface CorrectShiftRequest {
+    userId: string;
+    actualStart: string;
+    actualEnd: string;
+    reason: string;
 }
 
 export async function createShift(request: CreateShiftRequest): Promise<Shift> {
@@ -90,6 +98,21 @@ export async function updateShift(shiftId: string, request: UpdateShiftRequest):
     const response = await sessionRequest(`/api/shifts/${encodeURIComponent(shiftId)}`, {
         method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(request),
     }, "Unable to update this shift.");
+    return response.json() as Promise<Shift>;
+}
+
+/** Records a manager correction for a shift that has already started or finished. */
+export async function correctShift(shiftId: string, request: CorrectShiftRequest): Promise<Shift> {
+    const response = await sessionRequest(`/api/shifts/${encodeURIComponent(shiftId)}/correction`, {
+        method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(request),
+    }, "Unable to record this correction.");
+    return response.json() as Promise<Shift>;
+}
+
+export async function managerClock(shiftId: string, action: "in" | "out", reason: string): Promise<Shift> {
+    const response = await sessionRequest(`/api/shifts/${encodeURIComponent(shiftId)}/manager-clock-${action}`, {
+        method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ reason }),
+    }, "Unable to record manager attendance.");
     return response.json() as Promise<Shift>;
 }
 

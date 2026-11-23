@@ -26,14 +26,14 @@ test("completed shifts retain their status while carrying an open attendance exc
     assert.equal(event.extendedProps.attendanceException?.status, "OPEN");
 });
 
-test("manager calendars retain dated shift status and attendance details without action metadata", () => {
+test("manager calendars retain dated shift status and keep historical events non-draggable", () => {
     const [event] = buildManagerShiftEvents([{ ...shift, actualStart: "2026-11-09T09:05:00Z", status: "COMPLETED" }], "Europe/London", "site");
     assert.equal(event.title, "Alex Smith · Morning clean");
     assert.equal(event.start, "2026-11-09T09:00:00");
     assert.equal(event.end, "2026-11-09T12:00:00");
     assert.equal(event.extendedProps.statusLabel, "Completed");
     assert.equal(event.extendedProps.actualTime, "09:05–ongoing");
-    assert.equal(event.editable, true);
+    assert.equal(event.editable, false);
     assert.equal("canClockIn" in event.extendedProps, false);
     assert.equal("canClockOut" in event.extendedProps, false);
 });

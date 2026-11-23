@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { config } from "../src/config/config.ts";
-import { attendanceVariance, clockingInformation, createShift, formatShiftTime, getShifts, groupShiftsByDay, londonDate, nextLondonMidnight, nextShiftRefresh, removeShift, updateShift, type Shift, type ShiftsResponse } from "../src/lib/shifts.ts";
+import { attendanceVariance, clockingInformation, correctShift, createShift, formatShiftTime, getShifts, groupShiftsByDay, londonDate, managerClock, nextLondonMidnight, nextShiftRefresh, removeShift, updateShift, type Shift, type ShiftsResponse } from "../src/lib/shifts.ts";
 
 const shift: Shift = {
     id: "shift", site: { id: "site", name: "Office" },
@@ -120,7 +120,7 @@ test("manager requests filter shifts by one encoded employee or site", async (co
     assert.equal(requests[1].searchParams.has("userId"), false);
 });
 
-test("manager shift mutations use protected one-off endpoints and explicit local times", async (context) => {
+test("manager shift mutations use protected endpoints and explicit local times", async (context) => {
     const requests: { url: URL; init: RequestInit; body?: unknown }[] = [];
     context.mock.method(globalThis, "fetch", async (input: string, init: RequestInit = {}) => {
         const url = new URL(input);
@@ -131,10 +131,14 @@ test("manager shift mutations use protected one-off endpoints and explicit local
     const create = { siteId: "site", userId: "employee", scheduledStart: "2026-11-09T09:00:00", scheduledEnd: "2026-11-09T12:00:00" };
     await createShift(create);
     await updateShift("shift /?#", { userId: "other", scheduledStart: "2026-11-10T10:00:00", scheduledEnd: "2026-11-10T13:00:00" });
+    await correctShift("shift /?#", { userId: "other", actualStart: "2026-11-07T09:00:00", actualEnd: "2026-11-07T12:45:00", reason: "Approved overtime" });
+    await managerClock("shift /?#", "in", "Cleaner could not scan");
     await removeShift("shift /?#");
     assert.deepEqual(requests.map(({ url, init, body }) => [url.pathname, init.method, body]), [
         ["/api/shifts", "POST", create],
         ["/api/shifts/shift%20%2F%3F%23", "PUT", { userId: "other", scheduledStart: "2026-11-10T10:00:00", scheduledEnd: "2026-11-10T13:00:00" }],
+        ["/api/shifts/shift%20%2F%3F%23/correction", "PATCH", { userId: "other", actualStart: "2026-11-07T09:00:00", actualEnd: "2026-11-07T12:45:00", reason: "Approved overtime" }],
+        ["/api/shifts/shift%20%2F%3F%23/manager-clock-in", "PATCH", { reason: "Cleaner could not scan" }],
         ["/api/shifts/shift%20%2F%3F%23", "DELETE", undefined],
     ]);
     assert.ok(requests.every(({ init }) => new Headers(init.headers).get("X-CSRF-TOKEN") === "token"));
